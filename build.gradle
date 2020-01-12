@@ -70,6 +70,10 @@ subprojects {
 	}
 }
 
+project(':gtfs-loader') {
+	jar.archiveBaseName = 'gtfs-loader'
+}
+
 project(':dummy-producer') {
 	jar.archiveBaseName = 'dummy-producer'
 }
