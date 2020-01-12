@@ -1,0 +1,12 @@
+server.port: 0
+spring:
+  kafka:
+    consumer:
+      group-id: dummy-consumers
+      auto-offset-reset: earliest
+  cloud.stream.bindings.input.destination: messages
+  output.ansi.enabled: always
+
+gtfs:
+  topic-name: dummy-message
+  messages-per-request: 10

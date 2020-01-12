@@ -1,0 +1,17 @@
+.DS_Store
+*.ipr
+*.iml
+*.iws
+cllasses/
+build/
+out/
+.gradle/
+!gradle/wrapper
+!gradlew*
+.idea/
+!*.idea/runConfigurations
+.sts4-cache
+.classpath
+.project
+.settings
+bin/

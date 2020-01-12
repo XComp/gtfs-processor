@@ -1,0 +1,5 @@
+rootProject.name = 'gtfs-processor'
+include 'dummy-producer'
+include 'dummy-consumer'
+include 'dummy-consumer'
+

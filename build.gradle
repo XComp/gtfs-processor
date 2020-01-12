@@ -1,0 +1,97 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'base'
+	id 'java'
+	id 'application'
+	id 'groovy'
+	id 'idea'
+	id 'com.avast.gradle.docker-compose' version '0.9.4'
+}
+
+allprojects {
+
+	group = 'com.mapohl'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '11'
+
+	apply plugin: 'java'
+	apply plugin: 'application'
+	apply plugin: 'groovy'
+	apply plugin: 'java-library'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.springframework.boot'
+
+	repositories {
+		mavenCentral()
+	}
+
+	configurations {
+		developmentOnly
+		runtimeClasspath {
+			extendsFrom developmentOnly
+		}
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
+	}
+}
+
+subprojects {
+
+	dependencyManagement {
+		imports {
+			mavenBom 'org.springframework.boot:spring-boot-dependencies:2.2.2.RELEASE'
+			mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR1'
+		}
+	}
+
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+		implementation 'org.springframework.cloud:spring-cloud-stream'
+		implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
+		implementation 'org.springframework.kafka:spring-kafka'
+
+		compileOnly 'org.projectlombok:lombok:1.18.10'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+		annotationProcessor 'org.projectlombok:lombok:1.18.10'
+		testImplementation('org.springframework.boot:spring-boot-starter-test') {
+			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		}
+		testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
+		testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+		testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+		testImplementation 'org.spockframework:spock-spring:1.3-groovy-2.5'
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+}
+
+project(':dummy-producer') {
+	jar.archiveBaseName = 'dummy-producer'
+}
+
+project(':dummy-consumer') {
+	jar.archiveBaseName = 'dummy-consumer'
+}
+
+dockerCompose {
+	// captureContainersOutput = true
+	captureContainersOutput = false
+	stopContainers = true
+	removeContainers = true
+	removeImages = "Local"
+	removeVolumes = true
+	removeOrphans = true
+	forceRecreate = true
+	waitForTcpPorts = false
+	projectName = project.name
+}
+
+project.subprojects.each { subProject ->
+	subProject.test.dependsOn composeUp
+	subProject.test.finalizedBy composeDown
+}
