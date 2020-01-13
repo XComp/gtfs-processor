@@ -1,5 +1,6 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,11 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Builder
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "shape_points")
-public class ShapePoints extends AbstractEntity {
+public class ShapePoint extends AbstractEntity {
 
     @Id
     @Column(name = "shape_point_id", nullable = false)

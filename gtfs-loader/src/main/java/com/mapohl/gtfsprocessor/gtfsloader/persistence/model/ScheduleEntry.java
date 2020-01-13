@@ -1,5 +1,6 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
+@Builder
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)

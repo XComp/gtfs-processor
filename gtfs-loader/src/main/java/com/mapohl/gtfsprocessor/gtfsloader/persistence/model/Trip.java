@@ -1,11 +1,12 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.List;
 
+@Builder
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
