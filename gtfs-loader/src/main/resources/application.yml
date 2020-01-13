@@ -2,5 +2,7 @@ datasource:
   url: jdbc:h2:mem:testdb
   username: sa
   password: password
+
 spring.jpa:
-    show-sql=false:
+  show-sql: false
+  hibernate.ddl-auto: none
