@@ -98,7 +98,8 @@ CREATE TABLE trips (
 );
 
 CREATE TABLE stop_times (
-	trip_id               TEXT NOT NULL PRIMARY KEY,
+    stop_time_id          INT NOT NULL PRIMARY KEY,
+	trip_id               INT NOT NULL,
 	arrival_time          TIME NOT NULL,
 	departure_time        TIME NOT NULL,
 	stop_id               VARCHAR(32) NOT NULL,
@@ -107,6 +108,7 @@ CREATE TABLE stop_times (
     drop_off_type         SMALLINT CHECK(drop_off_type >= 0 and drop_off_type <=3),
     stop_headsign         TEXT,
     created_at            TIMESTAMP NOT NULL,
+    FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (stop_id) REFERENCES stops(stop_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
