@@ -19,7 +19,7 @@ CREATE TABLE agencies (
 );
 
 CREATE TABLE stops (
-	stop_id               TEXT NOT NULL PRIMARY KEY,
+	stop_id               VARCHAR(32) NOT NULL PRIMARY KEY,
 	stop_code             TEXT,
 	name                  TEXT NOT NULL,
 	description           TEXT,
@@ -34,7 +34,7 @@ CREATE TABLE stops (
 );
 
 CREATE TABLE routes (
-	route_id              TEXT NOT NULL PRIMARY KEY,
+	route_id              VARCHAR(16) NOT NULL PRIMARY KEY,
 	agency_id             INT,
 	short_name            TEXT,
 	long_name             TEXT,
@@ -71,22 +71,24 @@ CREATE TABLE schedule_exceptions (
 
 CREATE TABLE shape_points (
 	shape_point_id        INT NOT NULL PRIMARY KEY,
-	shape_id              TEXT NOT NULL,
+	shape_id              INT NOT NULL,
 	latitude              DOUBLE PRECISION NOT NULL,
 	longitude             DOUBLE PRECISION NOT NULL,
 	sequence              INT NOT NULL,
 	created_at            TIMESTAMP NOT NULL
 );
 
+CREATE HASH INDEX ix_shape_id ON shape_points(shape_id);
+
 CREATE TABLE trips (
 	trip_id               INT NOT NULL PRIMARY KEY,
-	route_id              TEXT NOT NULL,
+	route_id              VARCHAR(16) NOT NULL,
 	schedule_entry_id     INT NOT NULL,
 	stop_headsign         TEXT NULL,
 	short_name            TEXT NULL,
 	direction_id          INT NULL,
 	block_id              TEXT NULL,
-	shape_id              TEXT NULL,
+	shape_id              INT NULL,
 	wheelchair_accessible INT NULL,
 	bikes_allowed         INT NULL,
 	created_at            TIMESTAMP NOT NULL,
@@ -99,7 +101,7 @@ CREATE TABLE stop_times (
 	trip_id               TEXT NOT NULL PRIMARY KEY,
 	arrival_time          TIME NOT NULL,
 	departure_time        TIME NOT NULL,
-	stop_id               TEXT NOT NULL,
+	stop_id               VARCHAR(32) NOT NULL,
     stop_sequence         INT NOT NULL,
     pickup_type           SMALLINT CHECK(pickup_type >= 0 and pickup_type <=3),
     drop_off_type         SMALLINT CHECK(drop_off_type >= 0 and drop_off_type <=3),
@@ -110,12 +112,12 @@ CREATE TABLE stop_times (
 
 CREATE TABLE transfers (
     transfer_id           INT NOT NULL,
-    from_stop_id          TEXT NOT NULL,
-    to_stop_id            TEXT NOT NULL,
+    from_stop_id          VARCHAR(32) NOT NULL,
+    to_stop_id            VARCHAR(32) NOT NULL,
     transfer_type         INT NOT NULL,
     min_transfer_time     INT NOT NULL,
-    from_route_id         TEXT NOT NULL,
-    to_route_id           TEXT NOT NULL,
+    from_route_id         VARCHAR(16) NOT NULL,
+    to_route_id           VARCHAR(16) NOT NULL,
     from_trip_id          INT NOT NULL,
     to_trip_id            INT NOT NULL,
     created_at            TIMESTAMP NOT NULL,
