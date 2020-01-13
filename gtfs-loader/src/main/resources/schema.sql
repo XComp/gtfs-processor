@@ -9,12 +9,13 @@ DROP TABLE IF EXISTS stop_times;
 DROP TABLE IF EXISTS transfers;
 
 CREATE TABLE agencies (
-	agency_id             INTEGER NOT NULL PRIMARY KEY,
+	agency_id             INT NOT NULL PRIMARY KEY,
 	name                  TEXT NOT NULL,
 	url                   TEXT NOT NULL,
 	timezone              TEXT NOT NULL,
-	lang                  TEXT NULL,
-	phone_number          TEXT NULL
+	language              TEXT,
+	phone_number          TEXT,
+	created_at            TIMESTAMP NOT NULL
 );
 
 CREATE TABLE stops (
@@ -24,27 +25,29 @@ CREATE TABLE stops (
 	description           TEXT,
 	latitude              DOUBLE PRECISION NOT NULL,
 	longitude             DOUBLE PRECISION NOT NULL,
-	location_type         INTEGER,
+	location_type         INT,
 	parent_station        TEXT,
 	wheelchair_boarding   BOOLEAN,
 	platform_code         TEXT,
 	zone_id               TEXT,
+    created_at            TIMESTAMP NOT NULL
 );
 
 CREATE TABLE routes (
 	route_id              TEXT NOT NULL PRIMARY KEY,
-	agency_id             INTEGER,
+	agency_id             INT,
 	short_name            TEXT,
 	long_name             TEXT,
-	type                  INTEGER,
+	type                  INT,
 	background_color      TEXT,
 	text_color            TEXT,
 	description           TEXT,
+    created_at            TIMESTAMP NOT NULL,
 	FOREIGN KEY (agency_id) REFERENCES agencies(agency_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE schedule_entries (
-	schedule_entry_id     INTEGER NOT NULL PRIMARY KEY,
+	schedule_entry_id     INT NOT NULL PRIMARY KEY,
 	monday                BOOLEAN NOT NULL,
 	tuesday               BOOLEAN NOT NULL,
 	wednesday             BOOLEAN NOT NULL,
@@ -53,36 +56,40 @@ CREATE TABLE schedule_entries (
 	saturday              BOOLEAN NOT NULL,
 	sunday                BOOLEAN NOT NULL,
 	start_date            DATE NOT NULL,
-	end_date              DATE NOT NULL
+	end_date              DATE NOT NULL,
+    created_at            TIMESTAMP NOT NULL
 );
 
 CREATE TABLE schedule_exceptions (
-	schedule_exception_id INTEGER NOT NULL PRIMARY KEY,
-	schedule_entry_id     INTEGER NOT NULL,
+	schedule_exception_id INT NOT NULL PRIMARY KEY,
+	schedule_entry_id     INT NOT NULL,
 	date                  DATE NOT NULL,
-	exception_type        INTEGER NOT NULL,
+	exception_type        INT NOT NULL,
+	created_at            TIMESTAMP NOT NULL,
 	FOREIGN KEY (schedule_entry_id) REFERENCES schedule_entries(schedule_entry_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE shape_points (
-	shape_point_id        INTEGER NOT NULL PRIMARY KEY,
+	shape_point_id        INT NOT NULL PRIMARY KEY,
 	shape_id              TEXT NOT NULL,
 	latitude              DOUBLE PRECISION NOT NULL,
 	longitude             DOUBLE PRECISION NOT NULL,
-	sequence              INTEGER NOT NULL
+	sequence              INT NOT NULL,
+	created_at            TIMESTAMP NOT NULL
 );
 
 CREATE TABLE trips (
-	trip_id               INTEGER NOT NULL PRIMARY KEY,
+	trip_id               INT NOT NULL PRIMARY KEY,
 	route_id              TEXT NOT NULL,
-	schedule_entry_id     INTEGER NOT NULL,
+	schedule_entry_id     INT NOT NULL,
 	stop_headsign         TEXT NULL,
 	short_name            TEXT NULL,
-	direction_id          INTEGER NULL,
+	direction_id          INT NULL,
 	block_id              TEXT NULL,
 	shape_id              TEXT NULL,
-	wheelchair_accessible INTEGER NULL,
-	bikes_allowed         INTEGER NULL,
+	wheelchair_accessible INT NULL,
+	bikes_allowed         INT NULL,
+	created_at            TIMESTAMP NOT NULL,
 	FOREIGN KEY (route_id) REFERENCES routes(route_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (schedule_entry_id) REFERENCES schedule_entries(schedule_entry_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (shape_id) REFERENCES shape_points(shape_id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -93,23 +100,25 @@ CREATE TABLE stop_times (
 	arrival_time          TIME NOT NULL,
 	departure_time        TIME NOT NULL,
 	stop_id               TEXT NOT NULL,
-    stop_sequence         INTEGER NOT NULL,
+    stop_sequence         INT NOT NULL,
     pickup_type           SMALLINT CHECK(pickup_type >= 0 and pickup_type <=3),
     drop_off_type         SMALLINT CHECK(drop_off_type >= 0 and drop_off_type <=3),
     stop_headsign         TEXT,
+    created_at            TIMESTAMP NOT NULL,
     FOREIGN KEY (stop_id) REFERENCES stops(stop_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE transfers (
-    transfer_id         INTEGER NOT NULL,
-    from_stop_id        TEXT NOT NULL,
-    to_stop_id          TEXT NOT NULL,
-    transfer_type       INTEGER NOT NULL,
-    min_transfer_time   INTEGER NOT NULL,
-    from_route_id       TEXT NOT NULL,
-    to_route_id         TEXT NOT NULL,
-    from_trip_id        INTEGER NOT NULL,
-    to_trip_id          INTEGER NOT NULL,
+    transfer_id           INT NOT NULL,
+    from_stop_id          TEXT NOT NULL,
+    to_stop_id            TEXT NOT NULL,
+    transfer_type         INT NOT NULL,
+    min_transfer_time     INT NOT NULL,
+    from_route_id         TEXT NOT NULL,
+    to_route_id           TEXT NOT NULL,
+    from_trip_id          INT NOT NULL,
+    to_trip_id            INT NOT NULL,
+    created_at            TIMESTAMP NOT NULL,
     FOREIGN KEY (from_stop_id) REFERENCES stops(stop_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (to_stop_id) REFERENCES stops(stop_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (from_route_id) REFERENCES routes(route_id) ON DELETE CASCADE ON UPDATE CASCADE,
