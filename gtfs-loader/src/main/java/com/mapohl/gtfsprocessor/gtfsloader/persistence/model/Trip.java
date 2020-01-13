@@ -16,13 +16,13 @@ public class Trip extends AbstractEntity {
     @Column(name = "trip_id", nullable = false)
     int id;
 
-    // TODO: add FK
-    @Column(name = "route_id", nullable = false)
-    String route;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id", nullable = false)
+    Route route;
 
-    // TODO: add FK
-    @Column(name = "schedule_entry_id", nullable = false)
-    int scheduleEntry;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_entry_id", nullable = false)
+    ScheduleEntry scheduleEntry;
 
     @Column(name = "headsign")
     String headsign;

@@ -16,9 +16,9 @@ public class ScheduleException extends AbstractEntity {
     @Column(name = "schedule_exception_id", nullable = false)
     int id;
 
-    // TODO: FK
-    @Column(name = "schedule_entry", nullable = false)
-    int scheduleEntry;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_entry_id", nullable = false)
+    ScheduleEntry scheduleEntry;
 
     @Column(name = "date")
     LocalDate date;

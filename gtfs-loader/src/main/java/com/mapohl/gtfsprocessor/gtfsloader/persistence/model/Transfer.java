@@ -15,13 +15,13 @@ public class Transfer extends AbstractEntity {
     @Column(name = "transfer_id", nullable = false)
     int id;
 
-    // TODO: FK
-    @Column(name = "from_stop_id", nullable = false)
-    String fromStop;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_stop_id", nullable = false)
+    Stop fromStop;
 
-    // TODO: FK
-    @Column(name = "to_stop_id", nullable = false)
-    String toStop;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_stop_id", nullable = false)
+    Stop toStop;
 
     @Column(name = "transfer_type", nullable = false)
     int type;
@@ -29,19 +29,19 @@ public class Transfer extends AbstractEntity {
     @Column(name = "min_transfer_time", nullable = false)
     int minimalTransferTime;
 
-    // TODO: FK
-    @Column(name = "from_route_id")
-    String fromRoute;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_route_id", nullable = false)
+    Route fromRoute;
 
-    // TODO: FK
-    @Column(name = "to_route_id")
-    String toRoute;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_route_id", nullable = false)
+    Route toRoute;
 
-    // TODO: FK
-    @Column(name = "from_trip_id")
-    int fromTrip;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_trip_id", nullable = false)
+    Trip fromTrip;
 
-    // TODO: FK
-    @Column(name = "to_trip_id")
-    int toTrip;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_trip_id", nullable = false)
+    Trip toTrip;
 }
