@@ -1,21 +1,25 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "schedule_exceptions")
 public class ScheduleException extends AbstractEntity {
 
     @Id
-    @Column(name = "schedule_exception_id", nullable = false)
+    @Column(name = "schedule_exception_id", updatable = false, nullable = false)
     int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -10,6 +10,6 @@ import java.time.Instant;
 @MappedSuperclass
 public abstract class AbstractEntity {
 
-    @Column(name = "create_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     Instant createdAt = Instant.now();
 }

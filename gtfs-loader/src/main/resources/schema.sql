@@ -27,7 +27,7 @@ CREATE TABLE stops (
 	longitude             DOUBLE PRECISION NOT NULL,
 	location_type         INT,
 	parent_station        TEXT,
-	wheelchair_boarding   BOOLEAN,
+	wheelchair_boarding   INT,
 	platform_code         TEXT,
 	zone_id               TEXT,
     created_at            TIMESTAMP NOT NULL
@@ -48,13 +48,13 @@ CREATE TABLE routes (
 
 CREATE TABLE schedule_entries (
 	schedule_entry_id     INT NOT NULL PRIMARY KEY,
-	monday                BOOLEAN NOT NULL,
-	tuesday               BOOLEAN NOT NULL,
-	wednesday             BOOLEAN NOT NULL,
-	thursday              BOOLEAN NOT NULL,
-	friday                BOOLEAN NOT NULL,
-	saturday              BOOLEAN NOT NULL,
-	sunday                BOOLEAN NOT NULL,
+	monday                INT NOT NULL,
+	tuesday               INT NOT NULL,
+	wednesday             INT NOT NULL,
+	thursday              INT NOT NULL,
+	friday                INT NOT NULL,
+	saturday              INT NOT NULL,
+	sunday                INT NOT NULL,
 	start_date            DATE NOT NULL,
 	end_date              DATE NOT NULL,
     created_at            TIMESTAMP NOT NULL
@@ -78,7 +78,7 @@ CREATE TABLE shape_points (
 	created_at            TIMESTAMP NOT NULL
 );
 
-CREATE HASH INDEX ix_shape_id ON shape_points(shape_id);
+CREATE INDEX ix_shape_id ON shape_points(shape_id);
 
 CREATE TABLE trips (
 	trip_id               INT NOT NULL PRIMARY KEY,
@@ -93,8 +93,7 @@ CREATE TABLE trips (
 	bikes_allowed         INT NULL,
 	created_at            TIMESTAMP NOT NULL,
 	FOREIGN KEY (route_id) REFERENCES routes(route_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (schedule_entry_id) REFERENCES schedule_entries(schedule_entry_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (shape_id) REFERENCES shape_points(shape_id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (schedule_entry_id) REFERENCES schedule_entries(schedule_entry_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE stop_times (

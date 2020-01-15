@@ -1,13 +1,14 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,13 +17,14 @@ import java.time.LocalTime;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "stop_times")
 public class StopTime extends AbstractEntity {
 
     @Id
-    @GeneratedValue
     @Column(name = "stop_time_id", nullable = false)
     int id;
 
@@ -48,7 +50,7 @@ public class StopTime extends AbstractEntity {
     int pickupType;
 
     // TODO: enum?
-    @Column(name = "dropoff_type")
+    @Column(name = "drop_off_type")
     int dropoffType;
 
     @Column(name = "stop_headsign")

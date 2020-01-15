@@ -1,13 +1,17 @@
 package com.mapohl.gtfsprocessor.gtfsloader.persistence.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "routes")
@@ -17,8 +21,9 @@ public class Route extends AbstractEntity {
     @Column(name = "route_id", nullable = false)
     String id;
 
-    @Column(name = "agency_id", nullable = false)
-    int agency;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agency_id", nullable = false)
+    Agency agency;
 
     @Column(name = "short_name")
     String shortName;
