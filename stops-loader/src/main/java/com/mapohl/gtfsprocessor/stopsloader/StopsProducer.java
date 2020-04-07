@@ -1,19 +1,11 @@
 package com.mapohl.gtfsprocessor.stopsloader;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.stopsloader.domain.Stop;
+import com.mapohl.gtfsprocessor.stopsloader.services.SparkService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.MapFunction;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.types.DataTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,9 +20,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.apache.spark.sql.functions.callUDF;
-import static org.apache.spark.sql.functions.col;
-
 @Slf4j
 @SpringBootApplication()
 public class StopsProducer implements CommandLineRunner {
@@ -39,10 +28,14 @@ public class StopsProducer implements CommandLineRunner {
 
     private NewTopic kafkaTopic;
 
+    private SparkService sparkService;
+
     @Autowired
-    public StopsProducer(KafkaTemplate<Long, Stop> template, NewTopic topic) {
+    public StopsProducer(KafkaTemplate<Long, Stop> template, NewTopic topic, SparkService sparkService) {
         this.template = template;
         this.kafkaTopic = topic;
+
+        this.sparkService = sparkService;
     }
 
     public static void main(String[] args) {
@@ -58,36 +51,7 @@ public class StopsProducer implements CommandLineRunner {
         Path stopsFile = extractFile(zipArchive, "stops.txt");
         Path stopTimesFile = extractFile(zipArchive, "stop_times.txt");
 
-        SparkSession spark = SparkSession.builder().master("local[8]").getOrCreate();
-        JavaSparkContext javaSparkContext = new JavaSparkContext(spark.sparkContext());
-        SQLContext sqlContext = new SQLContext(javaSparkContext);
-
-        sqlContext.udf().register("extract_seconds_of_day", (UDF1<String, Integer>) (timeStr) -> {
-            String[] values = timeStr.split(":");
-            int secondsOfDay = Integer.parseInt(values[0]) * 60;
-            secondsOfDay += Integer.parseInt(values[1]);
-//            secondsOfDay += RandomUtils.nextInt(60);
-
-            return secondsOfDay;
-        }, DataTypes.IntegerType);
-
-        Dataset<Row> stopsDataset = spark.read()
-                .option("header", "true")
-                .option("inferSchema", "true")
-                .csv(stopsFile.toAbsolutePath().toString())
-                .as("stops");
-
-        Dataset<Row> stopTimes = spark.read()
-                .option("header", "true")
-                .option("inferSchema", "true")
-                .csv(stopTimesFile.toAbsolutePath().toString())
-                .as("stop_times");
-
-        List<Row> rows = stopTimes.join(stopsDataset, col("stop_times.stop_id").equalTo(col("stops.stop_id")))
-                .select("arrival_time", "departure_time", "stops.stop_id", "stop_sequence", "stop_name", "stop_lat", "stop_lon")
-                .withColumn("seconds_of_day", callUDF("extract_seconds_of_day", col("arrival_time")))
-                .orderBy("seconds_of_day")
-                .collectAsList();
+        List<Row> rows = this.sparkService.loadStops(stopsFile.toAbsolutePath().toString(), stopTimesFile.toAbsolutePath().toString());
 
         int startSecond = LocalTime.now().toSecondOfDay();
 
@@ -124,8 +88,6 @@ public class StopsProducer implements CommandLineRunner {
             this.template.send(this.kafkaTopic.name(), stop);
             rowCount++;
         }
-
-        spark.stop();
     }
 
     private static Path extractFile(ZipFile zipArchive, String entryName) throws IOException {
