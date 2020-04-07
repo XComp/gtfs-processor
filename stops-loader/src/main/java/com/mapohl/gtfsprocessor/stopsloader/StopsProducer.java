@@ -38,10 +38,6 @@ public class StopsProducer implements CommandLineRunner {
         this.sparkService = sparkService;
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(StopsProducer.class, args).close();
-    }
-
     @Override
     public void run(String... args) throws IOException, InterruptedException {
         Preconditions.checkArgument(args.length > 0, "No ZIP archive was specified.");
@@ -51,21 +47,14 @@ public class StopsProducer implements CommandLineRunner {
         Path stopsFile = extractFile(zipArchive, "stops.txt");
         Path stopTimesFile = extractFile(zipArchive, "stop_times.txt");
 
-        List<Row> rows = this.sparkService.loadStops(stopsFile.toAbsolutePath().toString(), stopTimesFile.toAbsolutePath().toString());
+        List<Stop> stops = this.sparkService.loadStops(
+                stopsFile.toAbsolutePath().toString(),
+                stopTimesFile.toAbsolutePath().toString());
 
         int startSecond = LocalTime.now().toSecondOfDay();
 
         int rowCount = 0;
-        for (Row row : rows) {
-            Stop stop = Stop.builder().arrivalTime(row.getString(0))
-                    .departureTime(row.getString(1))
-                    .stopId(row.getString(2))
-                    .stopSequence(row.getInt(3))
-                    .name(row.getString(4))
-                    .latitude(row.getDouble(5))
-                    .longitude(row.getDouble(6))
-                    .secondOfDay(row.getInt(7)).build();
-
+        for (Stop stop : stops) {
             int rowSecond = stop.getSecondOfDay();
             int currentSecond = LocalTime.now().toSecondOfDay() - startSecond;
 
@@ -99,5 +88,9 @@ public class StopsProducer implements CommandLineRunner {
         Files.copy(zipArchive.getInputStream(entry), extractedFile);
 
         return extractedFile;
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(StopsProducer.class, args).close();
     }
 }

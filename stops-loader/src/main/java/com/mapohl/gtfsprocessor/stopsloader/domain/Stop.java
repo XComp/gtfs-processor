@@ -4,15 +4,17 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+import java.io.Serializable;
+
+@Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Stop {
+public class Stop implements Serializable {
 
     private String arrivalTime;
 

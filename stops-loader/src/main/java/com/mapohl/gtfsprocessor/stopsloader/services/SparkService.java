@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.stopsloader.services;
 import com.mapohl.gtfsprocessor.stopsloader.domain.Stop;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
@@ -18,7 +19,7 @@ import static org.apache.spark.sql.functions.col;
 @Service
 public class SparkService {
 
-    public List<Row> loadStops(String stopsFilePath, String stopTimesFilePath) {
+    public List<Stop> loadStops(String stopsFilePath, String stopTimesFilePath) {
         SparkSession spark = SparkSession.builder().master("local[8]").getOrCreate();
         JavaSparkContext javaSparkContext = new JavaSparkContext(spark.sparkContext());
         SQLContext sqlContext = new SQLContext(javaSparkContext);
@@ -44,14 +45,16 @@ public class SparkService {
                 .csv(stopTimesFilePath)
                 .as("stop_times");
 
-        List<Row> rows = stopTimes.join(stopsDataset, col("stop_times.stop_id").equalTo(col("stops.stop_id")))
+        List<Stop> stops = stopTimes.join(stopsDataset, col("stop_times.stop_id").equalTo(col("stops.stop_id")))
                 .select("arrival_time", "departure_time", "stops.stop_id", "stop_sequence", "stop_name", "stop_lat", "stop_lon")
                 .withColumn("seconds_of_day", callUDF("extract_seconds_of_day", col("arrival_time")))
                 .orderBy("seconds_of_day")
+                .toDF("arrivalTime", "departureTime", "stopId", "stopSequence", "name", "latitude", "longitude", "secondOfDay")
+                .as(Encoders.bean(Stop.class))
                 .collectAsList();
 
         spark.stop();
 
-        return rows;
+        return stops;
     }
 }
