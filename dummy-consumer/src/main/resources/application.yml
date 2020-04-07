@@ -4,7 +4,7 @@ spring:
     consumer:
       group-id: dummy-consumers
       auto-offset-reset: earliest
-  cloud.stream.bindings.input.destination: messages
+  cloud.stream.bindings.input.destination: stops
   output.ansi.enabled: always
 
 gtfs:
