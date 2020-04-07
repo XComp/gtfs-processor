@@ -6,7 +6,9 @@ import com.mapohl.gtfsprocessor.stopsloader.domain.Stop;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
@@ -33,14 +35,14 @@ import static org.apache.spark.sql.functions.col;
 @SpringBootApplication()
 public class StopsProducer implements CommandLineRunner {
 
-    private KafkaTemplate<Long, String> template;
+    private KafkaTemplate<Long, Stop> template;
 
     private NewTopic kafkaTopic;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public StopsProducer(KafkaTemplate<Long, String> template, NewTopic topic) {
+    public StopsProducer(KafkaTemplate<Long, Stop> template, NewTopic topic) {
         this.template = template;
         this.kafkaTopic = topic;
     }
@@ -93,14 +95,14 @@ public class StopsProducer implements CommandLineRunner {
 
         int rowCount = 0;
         for (Row row : rows) {
-            Stop stop = new Stop(row.getString(0),
-                    row.getString(1),
-                    row.getString(2),
-                    row.getInt(3),
-                    row.getString(4),
-                    row.getDouble(5),
-                    row.getDouble(6),
-                    row.getInt(7));
+            Stop stop = Stop.builder().arrivalTime(row.getString(0))
+                    .departureTime(row.getString(1))
+                    .stopId(row.getString(2))
+                    .stopSequence(row.getInt(3))
+                    .name(row.getString(4))
+                    .latitude(row.getDouble(5))
+                    .longitude(row.getDouble(6))
+                    .secondOfDay(row.getInt(7)).build();
 
             int rowSecond = stop.getSecondOfDay();
             int currentSecond = LocalTime.now().toSecondOfDay() - startSecond;
@@ -121,8 +123,7 @@ public class StopsProducer implements CommandLineRunner {
                 currentSecond = LocalTime.now().toSecondOfDay() - startSecond;
             }
 
-            String json = this.objectMapper.writeValueAsString(stop);
-            this.template.send(this.kafkaTopic.name(), json);
+            this.template.send(this.kafkaTopic.name(), stop);
             rowCount++;
         }
 
