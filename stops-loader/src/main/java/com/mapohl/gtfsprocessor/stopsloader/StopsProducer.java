@@ -39,8 +39,6 @@ public class StopsProducer implements CommandLineRunner {
 
     private NewTopic kafkaTopic;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
     public StopsProducer(KafkaTemplate<Long, Stop> template, NewTopic topic) {
         this.template = template;
