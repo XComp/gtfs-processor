@@ -44,12 +44,10 @@ public class StopsProducer implements CommandLineRunner {
         String zipArchivePath = args[0];
 
         ZipFile zipArchive = new ZipFile(zipArchivePath);
-        Path stopsFile = extractFile(zipArchive, "stops.txt");
-        Path stopTimesFile = extractFile(zipArchive, "stop_times.txt");
+        String stopsFilePath = extractFile(zipArchive, "stops.txt");
+        String stopTimesFilePath = extractFile(zipArchive, "stop_times.txt");
 
-        List<Stop> stops = this.sparkService.loadStops(
-                stopsFile.toAbsolutePath().toString(),
-                stopTimesFile.toAbsolutePath().toString());
+        List<Stop> stops = this.sparkService.loadStops(stopsFilePath, stopTimesFilePath);
 
         int startSecond = LocalTime.now().toSecondOfDay();
 
@@ -79,7 +77,7 @@ public class StopsProducer implements CommandLineRunner {
         }
     }
 
-    private static Path extractFile(ZipFile zipArchive, String entryName) throws IOException {
+    private static String extractFile(ZipFile zipArchive, String entryName) throws IOException {
         Path extractedFile = Files.createTempFile("", "-" + entryName);
         extractedFile.toFile().delete();
 
@@ -87,7 +85,7 @@ public class StopsProducer implements CommandLineRunner {
 
         Files.copy(zipArchive.getInputStream(entry), extractedFile);
 
-        return extractedFile;
+        return extractedFile.toAbsolutePath().toString();
     }
 
     public static void main(String[] args) {
