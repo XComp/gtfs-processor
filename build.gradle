@@ -83,10 +83,6 @@ subprojects {
 	}
 }
 
-project(':gtfs-loader') {
-	jar.archiveBaseName = 'gtfs-loader'
-}
-
 project(':stops-loader') {
 	jar.archiveBaseName = 'stops-loader'
 }
