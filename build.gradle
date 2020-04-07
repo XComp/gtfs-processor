@@ -1,5 +1,6 @@
 buildscript {
 	ext {
+		lombokVersion = '1.18.12'
 		springBootVersion = '2.2.6.RELEASE'
 		sparkVersion = '2.4.5'
 		scalaVersion = '2.12'
@@ -65,9 +66,10 @@ subprojects {
 		compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
 		compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
-		compileOnly 'org.projectlombok:lombok:1.18.10'
+		compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+		annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'
-		annotationProcessor 'org.projectlombok:lombok:1.18.10'
 		testImplementation('org.springframework.boot:spring-boot-starter-test') {
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}
