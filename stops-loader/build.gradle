@@ -1,0 +1,23 @@
+plugins {
+    id 'application'
+}
+
+apply plugin: 'java'
+
+group 'com.mapohl'
+version '0.0.1-SNAPSHOT'
+
+dependencies {
+    compile ("org.apache.spark:spark-sql_${scalaVersion}:${sparkVersion}") {
+        exclude group: 'org.apache.logging.log4j', module: 'log4j'
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+    // we have to force version 3.0.9
+    // the janino dependency got mysterically upgraded to 3.1.0 which caused problems since the InternalCompilerException class
+    // was moved in 3.1.0. Spark was not able to locate the class in the old location anymore.
+    compile ("org.codehaus.janino:janino") {
+        version {
+            strictly '3.0.9'
+        }
+    }
+}
