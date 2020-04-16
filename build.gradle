@@ -20,18 +20,15 @@ plugins {
 
 allprojects {
 
-	group = 'com.mapohl'
-	version = '0.0.1-SNAPSHOT'
-
 	sourceCompatibility = '1.8'
 	targetCompatibility = '1.8'
 
+	apply plugin: 'base'
 	apply plugin: 'java'
 	apply plugin: 'application'
 	apply plugin: 'groovy'
 	apply plugin: 'java-library'
 	apply plugin: 'io.spring.dependency-management'
-	apply plugin: 'org.springframework.boot'
 
 	repositories {
 		mavenCentral()
@@ -48,7 +45,10 @@ allprojects {
 	}
 }
 
-subprojects {
+subprojects { Project p ->
+	if (!p.name.contains("generic")) {
+		apply plugin: 'org.springframework.boot'
+	}
 
 	dependencyManagement {
 		imports {
@@ -63,8 +63,8 @@ subprojects {
 		implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
 		implementation 'org.springframework.kafka:spring-kafka'
 
-		compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
-		compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+		implementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+		implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
 		compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
 		annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
@@ -76,7 +76,7 @@ subprojects {
 		testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
 		testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-		testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
+		testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
 		testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitVersion
 	}
 
@@ -85,12 +85,12 @@ subprojects {
 	}
 }
 
-project(':stops-loader') {
-	jar.archiveBaseName = 'stops-loader'
+project(':generic-producer') {
+	jar.archiveBaseName = 'generic-producer'
 }
 
-project(':dummy-producer') {
-	jar.archiveBaseName = 'dummy-producer'
+project(':speedtracker-producer') {
+	jar.archiveBaseName = 'speedtracker-producer'
 }
 
 project(':dummy-consumer') {

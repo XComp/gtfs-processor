@@ -4,7 +4,7 @@ spring:
     consumer:
       group-id: dummy-consumers
       auto-offset-reset: earliest
-  cloud.stream.bindings.input.destination: stops
+  cloud.stream.bindings.input.destination: speedtrackers
   output.ansi.enabled: always
 
 gtfs:
