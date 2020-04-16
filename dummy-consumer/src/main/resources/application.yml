@@ -6,7 +6,3 @@ spring:
       auto-offset-reset: earliest
   cloud.stream.bindings.input.destination: speedtrackers
   output.ansi.enabled: always
-
-gtfs:
-  topic-name: dummy-message
-  messages-per-request: 10
