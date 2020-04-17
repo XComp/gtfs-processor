@@ -1,0 +1,5 @@
+kafka:
+  bootstrapAddress: localhost:9092
+  topic: taxirides
+  partition-count: 1
+  replication-factor: 1

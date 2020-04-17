@@ -1,0 +1,19 @@
+jar.archiveBaseName = 'taxiride-producer'
+
+dependencies {
+    implementation project(':generic-producer')
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}"
+    implementation group: 'org.codehaus.janino', name: 'janino'
+//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+//        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+//    }
+//    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
+//    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
