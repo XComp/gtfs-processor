@@ -1,11 +1,8 @@
-jar.archiveBaseName = 'generic-producer'
+jar.archiveBaseName = 'dummy-consumer'
 
 dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-stream-binder-kafka'
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
-
-    implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}"
-    implementation group: 'org.codehaus.janino', name: 'janino'
 }

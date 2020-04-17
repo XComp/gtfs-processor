@@ -1,18 +1,19 @@
-apply plugin: 'application'
+jar.archiveBaseName = 'speedtracker-producer'
 
 dependencies {
-    api project(':generic-producer')
+    implementation project(':generic-producer')
 
-    implementation ("org.apache.spark:spark-sql_${scalaVersion}:${sparkVersion}") {
-        exclude group: 'org.apache.logging.log4j', module: 'log4j'
-        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    }
-    // we have to force version 3.0.9
-    // the janino dependency got mysterically upgraded to 3.1.0 which caused problems since the InternalCompilerException class
-    // was moved in 3.1.0. Spark was not able to locate the class in the old location anymore.
-    implementation ("org.codehaus.janino:janino") {
-        version {
-            strictly '3.0.9'
-        }
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}"
+    implementation group: 'org.codehaus.janino', name: 'janino'
+//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+//        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+//    }
+//    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
+//    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
