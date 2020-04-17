@@ -26,7 +26,6 @@ allprojects {
 	apply plugin: 'base'
 	apply plugin: 'java'
 	apply plugin: 'application'
-	apply plugin: 'groovy'
 	apply plugin: 'java-library'
 	apply plugin: 'io.spring.dependency-management'
 
@@ -45,8 +44,8 @@ allprojects {
 	}
 }
 
-subprojects { Project p ->
-	if (!p.name.contains("generic")) {
+subprojects {
+	if (!name.contains("generic")) {
 		apply plugin: 'org.springframework.boot'
 	}
 
