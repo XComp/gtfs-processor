@@ -6,18 +6,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
+import org.springframework.messaging.handler.annotation.Payload;
+
+import java.util.List;
 
 @Slf4j
 @SpringBootApplication
-@EnableBinding(Sink.class)
 public class DummyConsumer {
 
     public static void main(String[] args) {
         SpringApplication.run(DummyConsumer.class, args);
     }
 
-    @ServiceActivator(inputChannel = Sink.INPUT)
-    public void receiveMessage(String message) {
-        log.info("message received: '{}'", message);
+    @KafkaListener(
+            topics = { "#{'${kafka.topic}'}" },
+            groupId = "#{'${kafka.group-id}'}",
+            containerFactory = "kafkaListenerContainerFactory",
+            autoStartup = "true")
+    public void consumeData(@Payload List<String> containers) {
+        containers.forEach(data -> log.info("message received: '{}'", data));
     }
 }

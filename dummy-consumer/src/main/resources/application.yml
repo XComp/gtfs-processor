@@ -1,8 +1,5 @@
-server.port: 0
-spring:
-  kafka:
-    consumer:
-      group-id: dummy-consumers
-      auto-offset-reset: earliest
-  cloud.stream.bindings.input.destination: speedtrackers
-  output.ansi.enabled: always
+kafka:
+  bootstrap-address: "localhost:9092"
+  group-id: "dummy-consumer"
+  auto-offset-reset: "earliest"
+  topic: "default"

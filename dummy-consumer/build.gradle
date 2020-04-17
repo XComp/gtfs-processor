@@ -6,3 +6,9 @@ dependencies {
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
 }
+
+bootRun {
+    if (project.hasProperty('args')) {
+        args project.args.split(',')
+    }
+}
