@@ -54,7 +54,7 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
                 continue;
             }
 
-            while (entityTime.isAfter(nextTimeSlot)) {
+            while (!entityTime.isBefore(nextTimeSlot)) {
                 if (entityCount > 0) {
                     log.info("{} rows were sent for {}s (next second to emit: {}).",
                             entityCount,
