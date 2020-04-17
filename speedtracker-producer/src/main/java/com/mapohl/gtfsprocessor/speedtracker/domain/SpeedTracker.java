@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -23,7 +22,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 @AllArgsConstructor
 public class SpeedTracker implements Entity<Long> {
 
-    private static DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+    static DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .append(ISO_LOCAL_DATE)
             .appendLiteral(' ')

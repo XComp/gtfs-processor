@@ -3,18 +3,11 @@ package com.mapohl.gtfsprocessor.speedtracker.domain;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import org.apache.spark.sql.Row;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 
 public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
 
@@ -42,7 +35,7 @@ public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
     // 9 - OWNER
     // 10 - TRANSCOM_ID
     // 11 - BOROUGH
-    // 12 LINK_NAME
+    // 12 - LINK_NAME
     @Override
     public SpeedTracker map(Row row) {
         return SpeedTracker.builder()
