@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.RandomUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ public class TaxiRide implements Entity<Long> {
             .append(ISO_LOCAL_TIME)
             .toFormatter();
 
-    private long id = RandomUtils.nextLong();
+    private long id;
 
     private String pickupTimeStr;
     private String dropOffTimeStr;

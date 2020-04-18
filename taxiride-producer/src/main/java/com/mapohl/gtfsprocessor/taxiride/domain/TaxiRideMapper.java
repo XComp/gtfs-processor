@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.spark.sql.Row;
 
 public class TaxiRideMapper implements EntityMapper<TaxiRide> {
@@ -26,6 +27,7 @@ public class TaxiRideMapper implements EntityMapper<TaxiRide> {
     @Override
     public TaxiRide map(Row row) {
         return TaxiRide.builder()
+                .id(RandomUtils.nextLong())
                 .pickupTimeStr(row.getTimestamp(1).toString())
                 .dropOffTimeStr(row.getTimestamp(2).toString())
                 .passengerCount(row.getInt(3))
