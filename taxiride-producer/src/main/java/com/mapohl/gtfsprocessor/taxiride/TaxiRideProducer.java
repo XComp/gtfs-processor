@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.taxiride;
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.EntityLoader;
+import com.mapohl.gtfsprocessor.genericproducer.services.SparkEntityLoader;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,7 @@ public class TaxiRideProducer implements CommandLineRunner {
             timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).parse(args[1], Instant::from);
         }
 
-        EntityLoader<TaxiRide> entityLoader = new EntityLoader<>(
+        EntityLoader<TaxiRide> entityLoader = new SparkEntityLoader<>(
                 csvFilePath, TaxiRide.class, this.entityMapper)
                 .withHeader()
                 .withFilter((FilterFunction<TaxiRide>) v ->

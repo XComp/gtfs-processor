@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.speedtracker;
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.EntityLoader;
+import com.mapohl.gtfsprocessor.genericproducer.services.SparkEntityLoader;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,7 @@ public class SpeedTrackerProducer implements CommandLineRunner {
             timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).parse(args[1], Instant::from);
         }
 
-        EntityLoader<SpeedTracker> entityLoader = new EntityLoader<>(
+        EntityLoader<SpeedTracker> entityLoader = new SparkEntityLoader<>(
                 csvFilePath, SpeedTracker.class, this.entityMapper)
                 .withFilter((FilterFunction<SpeedTracker>) v ->
                         v.getCreationTime().isAfter(timeThreshold));
