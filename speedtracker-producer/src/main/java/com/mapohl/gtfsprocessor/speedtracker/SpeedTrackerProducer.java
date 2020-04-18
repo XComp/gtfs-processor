@@ -27,6 +27,10 @@ public class SpeedTrackerProducer implements CommandLineRunner {
 
     private EntityMapper<SpeedTracker> entityMapper;
 
+    public static void main(String[] args) {
+        SpringApplication.run(SpeedTrackerProducer.class, args).close();
+    }
+
     @Override
     public void run(String... args) throws InterruptedException {
         Preconditions.checkArgument(args.length > 0, "CSV file was not passed");
@@ -45,9 +49,5 @@ public class SpeedTrackerProducer implements CommandLineRunner {
                         v.getCreationTime().isAfter(timeThreshold));
 
         this.kafkaEmitService.emit(entityLoader, Duration.ofMinutes(1), ChronoUnit.MINUTES);
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(SpeedTrackerProducer.class, args).close();
     }
 }

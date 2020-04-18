@@ -40,7 +40,9 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public KafkaEmitService<Long, SpeedTracker> kafkaEmitService(KafkaTemplate<Long, SpeedTracker> kafkaTemplate, NewTopic speedTrackerTopic) {
+    public KafkaEmitService<Long, SpeedTracker> kafkaEmitService(
+            KafkaTemplate<Long, SpeedTracker> kafkaTemplate,
+            NewTopic speedTrackerTopic) {
         return new KafkaEmitService<>(kafkaTemplate, speedTrackerTopic);
     }
 

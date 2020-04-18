@@ -15,8 +15,7 @@ public class KafkaTopicConfiguration {
 
     @Bean
     public KafkaAdmin kafkaAdmin(
-            @Value("${kafka.bootstrapAddress}") String bootstrapAddress
-    ) {
+            @Value("${kafka.bootstrapAddress}") String bootstrapAddress) {
         Map<String, Object> configs = Maps.newHashMap();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
 
@@ -27,8 +26,7 @@ public class KafkaTopicConfiguration {
     public NewTopic topic(
             @Value(value = "${kafka.topic}") String topicName,
             @Value(value = "${kafka.partition-count}") int partitionCount,
-            @Value(value = "${kafka.replication-factor}") short replicationFactor
-    ) {
+            @Value(value = "${kafka.replication-factor}") short replicationFactor) {
         return new NewTopic(topicName, partitionCount, replicationFactor);
     }
 }

@@ -27,6 +27,10 @@ public class TaxiRideProducer implements CommandLineRunner {
 
     private EntityMapper<TaxiRide> entityMapper;
 
+    public static void main(String[] args) {
+        SpringApplication.run(TaxiRideProducer.class, args).close();
+    }
+
     @Override
     public void run(String... args) throws InterruptedException {
         Preconditions.checkArgument(args.length > 0, "CSV file was not passed");
@@ -46,9 +50,5 @@ public class TaxiRideProducer implements CommandLineRunner {
                         v.getCreationTime().isAfter(timeThreshold));
 
         this.kafkaEmitService.emit(entityLoader, Duration.ofMinutes(1), ChronoUnit.MINUTES);
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(TaxiRideProducer.class, args).close();
     }
 }

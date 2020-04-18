@@ -1,9 +1,6 @@
 package com.mapohl.gtfsprocessor.speedtracker.domain;
 
 import com.google.common.collect.Lists;
-import com.mapohl.gtfsprocessor.speedtracker.domain.LinkPoint;
-import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
-import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTrackerMapper;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.junit.jupiter.api.Test;
@@ -38,7 +35,7 @@ class SpeedTrackerMapperTest {
                 4362247,                                                // TRANSCOM_ID
                 "Queens",                                               // BOROUGH
                 "Link description"                                      // LINK_NAME
-                );
+        );
 
         SpeedTracker expectedEntity = SpeedTracker.builder()
                 .speed(10.5)

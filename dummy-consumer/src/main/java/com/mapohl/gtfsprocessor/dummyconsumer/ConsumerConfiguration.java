@@ -19,8 +19,7 @@ public class ConsumerConfiguration {
     public ConsumerFactory<String, String> consumerFactory(
             @Value(value = "${kafka.bootstrap-address}") String bootstrapAddress,
             @Value(value = "${kafka.group-id}") String groupId,
-            @Value(value = "${kafka.auto-offset-reset}") String autoOffsetReset
-    ) {
+            @Value(value = "${kafka.auto-offset-reset}") String autoOffsetReset) {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -34,7 +33,8 @@ public class ConsumerConfiguration {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory) {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
+            ConsumerFactory<String, String> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
