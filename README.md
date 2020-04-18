@@ -13,6 +13,16 @@ Download-Link: https://data.cityofnewyork.us/Transportation/Real-Time-Traffic-Sp
 
 Download-Link: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 
+### NYC Taxi Zone lookup data
+
+Download-Page: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+(Download-Link: https://s3.amazonaws.com/nyc-tlc/misc/taxi+_zone_lookup.csv)
+
+The Python script `src/main/python/extract_latlon.py` is used to create the actual lookup table 
+used in this was used to extract the interesting information out of the `*.geojson` file.
+
+The resulting lookup table was saved under `src/main/resources/nyc_taxi_zones.csv.gz`.
+
 ## Commands
 
 Start the Kafka infrastructure:
