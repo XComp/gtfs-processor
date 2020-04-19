@@ -7,9 +7,9 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
+    implementation group: 'com.google.guava', name: 'guava'
+    implementation group: 'org.apache.commons', name: 'commons-lang3'
 
-    implementation group: 'org.apache.spark', name: "spark-sql_${scalaVersion}"
-    implementation group: 'org.codehaus.janino', name: 'janino'
 //    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //    testImplementation('org.springframework.boot:spring-boot-starter-test') {
 //        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

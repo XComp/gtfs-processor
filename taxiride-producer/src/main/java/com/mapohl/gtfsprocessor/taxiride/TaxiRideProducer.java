@@ -2,13 +2,12 @@ package com.mapohl.gtfsprocessor.taxiride;
 
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.services.EntityLoader;
-import com.mapohl.gtfsprocessor.genericproducer.services.SparkEntityLoader;
+import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.EntityLoader;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
+import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.MultiThreadedStableEntityLoader;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.spark.api.java.function.FilterFunction;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +32,7 @@ public class TaxiRideProducer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws InterruptedException {
+    public void run(String... args) throws Exception {
         Preconditions.checkArgument(args.length > 0, "CSV file was not passed");
         String csvFilePath = args[0];
 
@@ -44,11 +43,9 @@ public class TaxiRideProducer implements CommandLineRunner {
             timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).parse(args[1], Instant::from);
         }
 
-        EntityLoader<TaxiRide> entityLoader = new SparkEntityLoader<>(
-                csvFilePath, TaxiRide.class, this.entityMapper)
-                .withHeader()
-                .withFilter((FilterFunction<TaxiRide>) v ->
-                        v.getCreationTime().isAfter(timeThreshold));
+        EntityLoader<TaxiRide> entityLoader = new MultiThreadedStableEntityLoader<>(
+                csvFilePath, this.entityMapper, 8)
+                .withEntityFilter(v -> v.getCreationTime().isAfter(timeThreshold));
 
         this.kafkaEmitService.emit(entityLoader, Duration.ofMinutes(1), ChronoUnit.MINUTES);
     }

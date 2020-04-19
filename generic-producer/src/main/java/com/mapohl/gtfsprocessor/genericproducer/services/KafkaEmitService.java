@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.genericproducer.services;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
+import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.EntityLoader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -14,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,22 +28,29 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
     private final KafkaTemplate<ID, E> kafkaTemplate;
     private final NewTopic kafkaTopic;
 
-    public void emit(EntityLoader<E> entityLoader) throws InterruptedException {
+    public void emit(EntityLoader<E> entityLoader) throws Exception {
         this.emit(entityLoader, Duration.ofSeconds(1), ChronoUnit.SECONDS);
     }
 
-    public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy) throws InterruptedException {
+    public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy) throws Exception {
         this.emit(entityLoader, timeSlotLength, initialAccuracy, Duration.ofSeconds(1));
     }
 
-    public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy, Duration realtimeTimeSlotLength) throws InterruptedException {
-        List<E> entities = entityLoader.load();
+    public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy, Duration realtimeTimeSlotLength) throws Exception {
+        Queue<E> entityQueue = new ConcurrentLinkedQueue<>();
+        entityLoader.load(entityQueue);
 
         Instant currentTime = null;
         Instant nextTimeSlot = null;
 
         int entityCount = 0;
-        for (E entity : entities) {
+        while (!entityQueue.isEmpty() || !entityLoader.endOfData()) {
+            E entity = entityQueue.poll();
+
+            if (entity == null) {
+                continue;
+            }
+
             Instant entityTime = entity.getCreationTime();
 
             if (currentTime == null) {

@@ -1,10 +1,6 @@
 package com.mapohl.gtfsprocessor.genericproducer.domain;
 
-import org.apache.spark.sql.Row;
+public interface EntityMapper<E extends Entity<?>> {
 
-import java.io.Serializable;
-
-public interface EntityMapper<E extends Entity<?>> extends Serializable {
-
-    E map(Row row);
+    public E map(String lines);
 }

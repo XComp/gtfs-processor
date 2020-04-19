@@ -1,51 +1,69 @@
 package com.mapohl.gtfsprocessor.speedtracker.domain;
 
+import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import org.apache.spark.sql.Row;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
 
-    private static List<LinkPoint> parseLinkPoints(String linkPointStr) {
-        return Arrays.stream(linkPointStr.split(" ")).flatMap((Function<String, Stream<LinkPoint>>) s -> {
-            try {
-                String[] values = s.split(",");
-                return Stream.of(new LinkPoint(Double.parseDouble(values[0]), Double.parseDouble(values[1])));
-            } catch (Throwable t) {
-                // ignore invalid points
-                return Stream.empty();
+    public static List<LinkPoint> parseLinkPoints(String linkPointStr) {
+        int index;
+        int nextIndex = 0;
+
+        List<LinkPoint> linkPoints = Lists.newArrayList();
+        while (true) {
+            index = nextIndex + 1;
+            nextIndex = linkPointStr.indexOf(',', index + 1);
+
+            if (nextIndex < 0) {
+                break;
             }
-        }).collect(Collectors.toList());
+
+            double lat;
+            try {
+                lat = Double.parseDouble(linkPointStr.substring(index, nextIndex));
+            } catch (NumberFormatException e) {
+                break;
+            }
+
+            index = nextIndex + 1;
+            nextIndex = linkPointStr.indexOf(' ', index + 1);
+
+            if (nextIndex < 0) {
+                nextIndex = linkPointStr.length();
+            }
+
+            double lon;
+            try {
+                lon = Double.parseDouble(linkPointStr.substring(index, nextIndex));
+            } catch (NumberFormatException e) {
+                break;
+            }
+
+            linkPoints.add(new LinkPoint(lat, lon));
+        }
+
+        return linkPoints;
     }
 
-    // 0 - ID
-    // 1 - SPEED
-    // 2 - TRAVEL_TIME
-    // 3 - STATUS
-    // 4 - DATA_AS_OF
-    // 5 - LINK_ID
-    // 6 - LINK_POINTS
-    // 7 - ENCODED_POLY_LINE
-    // 8 - ENCODED_POLY_LINE_LVLS
-    // 9 - OWNER
-    // 10 - TRANSCOM_ID
-    // 11 - BOROUGH
-    // 12 - LINK_NAME
     @Override
-    public SpeedTracker map(Row row) {
+    public SpeedTracker map(String line) {
+        int firstQuote = line.indexOf('"');
+        int secondQuote = line.indexOf('"', firstQuote + 1);
+
+        List<LinkPoint> linkPoints = parseLinkPoints(line.substring(firstQuote + 1, secondQuote));
+        String[] precedingValues = line.substring(0, firstQuote - 1).split(",");
+        String[] succeedingValues = line.substring(secondQuote + 1).split(",");
+
         return SpeedTracker.builder()
-                .speed(row.getDouble(1))
-                .travelTimeInSeconds(row.getInt(2))
-                .creationTimeStr(row.getTimestamp(4).toString())
-                .linkId(row.getInt(5))
-                .linkPoints(parseLinkPoints(row.getString(6)))
-                .borough(row.getString(11))
-                .description(row.getString(12))
+                .speed(Double.parseDouble(precedingValues[1]))
+                .travelTimeInSeconds(Integer.parseInt(precedingValues[2]))
+                .creationTimeStr(precedingValues[4])
+                .linkId(Integer.parseInt(precedingValues[5]))
+                .linkPoints(linkPoints)
+                .borough(succeedingValues[4])
+                .description(succeedingValues[5])
                 .build();
     }
 }

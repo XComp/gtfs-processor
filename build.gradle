@@ -1,7 +1,6 @@
 buildscript {
     ext {
         javaVersion = '1.8'
-        scalaVersion = '2.12'
         springBootVersion = '2.2.6.RELEASE'
         junitVersion = '5.6.1'
     }
@@ -48,15 +47,8 @@ subprojects {
 
         dependencies {
             dependency group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-
-            dependency(group: 'org.apache.spark', name: "spark-sql_${scalaVersion}", version: '2.4.5') {
-                exclude group: 'org.apache.logging.log4j', name: 'log4j'
-                exclude group: 'org.slf4j', name: 'slf4j-log4j12'
-            }
-            // we have to force version 3.0.9
-            // the janino dependency got mysterically upgraded to 3.1.0 which caused problems since the InternalCompilerException class
-            // was moved in 3.1.0. Spark was not able to locate the class in the old location anymore.
-            dependency group: 'org.codehaus.janino', name: 'janino', version: '3.0.9'
+            dependency group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+            dependency group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
         }
     }
 

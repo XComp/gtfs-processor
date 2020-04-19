@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.spark.sql.Row;
 
 public class TaxiRideMapper implements EntityMapper<TaxiRide> {
 
@@ -25,18 +24,19 @@ public class TaxiRideMapper implements EntityMapper<TaxiRide> {
     // 16 - total_amount
     // 17 - congestion_surcharge
     @Override
-    public TaxiRide map(Row row) {
+    public TaxiRide map(String line) {
+        String[] values = line.split(",");
         return TaxiRide.builder()
                 .id(RandomUtils.nextLong())
-                .pickupTimeStr(row.getTimestamp(1).toString())
-                .dropOffTimeStr(row.getTimestamp(2).toString())
-                .passengerCount(row.getInt(3))
-                .distance(row.getDouble(4))
-                .pickupZoneId(row.getInt(7))
-                .dropOffZoneId(row.getInt(8))
-                .paymentTypeId(row.getInt(9))
-                .tollAmount(row.getDouble(14))
-                .totalAmount(row.getDouble(16))
+                .pickupTimeStr(values[1])
+                .dropOffTimeStr(values[2])
+                .passengerCount(Integer.parseInt(values[3]))
+                .distance(Double.parseDouble(values[4]))
+                .pickupZoneId(Integer.parseInt(values[7]))
+                .dropOffZoneId(Integer.parseInt(values[8]))
+                .paymentTypeId(Integer.parseInt(values[9]))
+                .tollAmount(Double.parseDouble(values[14]))
+                .totalAmount(Double.parseDouble(values[16]))
                 .build();
     }
 }
