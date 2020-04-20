@@ -8,11 +8,7 @@ import java.util.function.Predicate;
 
 public interface EntityLoader<E extends Entity<?>> extends Serializable {
 
-    public default void load(BlockingQueue<E> entityQueue) throws Exception {
-        this.load(entityQueue, Integer.MAX_VALUE);
-    }
-
-    public void load(BlockingQueue<E> entityQueue, int limit) throws Exception;
+    public void load(BlockingQueue<E> entityQueue) throws Exception;
 
     public EntityLoader<E> withLineFilter(Predicate<String> line);
 

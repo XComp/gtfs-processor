@@ -16,11 +16,11 @@ public class SingleThreadedEntityLoader<E extends Entity<?>> extends AbstractEnt
     private final EntityMapper<E> entityMapper;
 
     @Override
-    public void load(BlockingQueue<E> entityQueue, int limit) throws IOException {
+    public void load(BlockingQueue<E> entityQueue) throws IOException {
         int entityCount = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(this.filepath))) {
             String line = reader.readLine();
-            while (line != null && entityCount++ < limit) {
+            while (line != null) {
                 if (this.process(line)) {
                     E entity = this.entityMapper.map(line);
                     if (this.process(entity)) {

@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +28,7 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
     private final BlockingQueue<E> entityQueue;
 
     public KafkaEmitService(KafkaTemplate<ID, E> kafkaTemplate, NewTopic kafkaTopic) {
-        this(kafkaTemplate, kafkaTopic, new ArrayBlockingQueue<>(Integer.MAX_VALUE));
+        this(kafkaTemplate, kafkaTopic, new ArrayBlockingQueue<>(10_000));
     }
 
     public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy, Duration realtimeTimeSlotLength) throws Exception {
@@ -60,17 +59,11 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
             }
 
             while (!entityTime.isBefore(nextTimeSlot)) {
-                if (entityCount > 0) {
-                    log.info("{} rows were sent for {}s (next second to emit: {}).",
-                            entityCount,
-                            INSTANT_FORMATTER.format(currentTime),
-                            INSTANT_FORMATTER.format(entityTime));
-                    entityCount = 0;
-                } else {
-                    log.info("No rows were sent for {}s (next second to emit: {}).",
-                            INSTANT_FORMATTER.format(currentTime),
-                            INSTANT_FORMATTER.format(entityTime));
-                }
+                log.info("{} sent for {}s (second to next emission: {}).",
+                        entityCount == 1 ? "1 row was" : entityCount + " rows were",
+                        INSTANT_FORMATTER.format(currentTime),
+                        INSTANT_FORMATTER.format(entityTime));
+                entityCount = 0;
 
                 Thread.sleep(realtimeTimeSlotLength.toMillis());
                 currentTime = nextTimeSlot;
@@ -80,5 +73,9 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
             this.kafkaTemplate.send(this.kafkaTopic.name(), entity.getEntityId(), entity);
             entityCount++;
         }
+
+        log.info("Final emission: {} sent for {}s.",
+                entityCount == 1 ? "1 row was" : entityCount + " rows were",
+                INSTANT_FORMATTER.format(currentTime));
     }
 }

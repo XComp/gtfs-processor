@@ -46,6 +46,9 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
     @CommandLine.Option(names = {"-h", "--header-lines"}, defaultValue = "1")
     private int initialLinesToIgnore;
 
+    @CommandLine.Option(names = {"-e", "--entity-limit"}, defaultValue = Integer.MAX_VALUE + "")
+    private int entityLimit;
+
     @Override
     public Integer call() throws Exception {
         final Instant timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -58,8 +61,10 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
         log.info("  Time slot length (--time-slot-length/time-unit): {} {}", this.timeSlotLength, this.timeSlotLengthTimeUnit);
         log.info("  Real time slot length (--real-time-slot-length/time-unit): {} {}", this.realTimeSlotLength, this.realTimeSlotLengthTimeUnit);
         log.info("  Log accuracy (--log-accuracy): {}", this.logAccuracy);
+        log.info("  Header lines (--header-lines): {}", this.initialLinesToIgnore);
+        log.info("  Entity limit (--entity-limit): {}", this.entityLimit);
 
-        EntityLoader<E> entityLoader = new BackgroundEntityLoader<>(this.csvFilePath, this.entityMapper)
+        EntityLoader<E> entityLoader = new BackgroundEntityLoader<>(this.csvFilePath, this.entityMapper, this.entityLimit)
                 .withInitialLinesToIgnore(this.initialLinesToIgnore)
                 .withEntityFilter(v -> !v.getCreationTime().isBefore(timeThreshold));
 

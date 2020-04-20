@@ -37,8 +37,8 @@ public class TaxiRide implements Entity<Long> {
 
     private double distance;
 
-    private int pickupZoneId;
-    private int dropOffZoneId;
+    private NYCTaxiZone pickupZone;
+    private NYCTaxiZone dropOffZone;
 
     private int paymentTypeId;
     private double tollAmount;

@@ -22,7 +22,6 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
     private class ReaderThread extends Thread {
 
         private final BlockingQueue<E> entityQueue;
-        private final int limit;
 
         @Override
         public void run() {
@@ -36,10 +35,11 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
                 int lineCount = 0;
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(iStream, Charset.defaultCharset()))) {
                     String line = reader.readLine();
-                    while (line != null && entityCount++ < limit) {
+                    while (line != null && entityCount < BackgroundEntityLoader.this.entityLimit) {
                         if (++lineCount > BackgroundEntityLoader.this.firstLinesToIgnore && BackgroundEntityLoader.this.process(line)) {
                             E entity = BackgroundEntityLoader.this.entityMapper.map(line);
                             if (BackgroundEntityLoader.this.process(entity)) {
+                                entityCount++;
                                 this.entityQueue.put(entity);
                             }
                         }
@@ -57,6 +57,7 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
 
     private final String csvFilePath;
     private final EntityMapper<E> entityMapper;
+    private final int entityLimit;
 
     private int firstLinesToIgnore = 0;
 
@@ -66,13 +67,9 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
         return this;
     }
 
-    public BackgroundEntityLoader<E> ignoreHeader() {
-        return this.withInitialLinesToIgnore(1);
-    }
-
     @Override
-    public void load(BlockingQueue<E> entityQueue, int limit) throws Exception {
-        Thread readingThread = new ReaderThread(entityQueue, limit);
+    public void load(BlockingQueue<E> entityQueue) throws Exception {
+        Thread readingThread = new ReaderThread(entityQueue);
         readingThread.start();
     }
 }

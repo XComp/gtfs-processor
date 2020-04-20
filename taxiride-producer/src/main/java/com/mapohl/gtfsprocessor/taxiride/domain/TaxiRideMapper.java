@@ -1,9 +1,22 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.Map;
+
 public class TaxiRideMapper implements EntityMapper<TaxiRide> {
+
+    private transient Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
+
+    private NYCTaxiZone getNYCTaxiZone(int zoneId) {
+        if (this.nycTaxiZoneIndex == null) {
+            this.nycTaxiZoneIndex = NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
+        }
+
+        return this.nycTaxiZoneIndex.get(zoneId);
+    }
 
     // 0 - VendorID
     // 1 - tpep_pickup_datetime
@@ -32,8 +45,8 @@ public class TaxiRideMapper implements EntityMapper<TaxiRide> {
                 .dropOffTimeStr(values[2])
                 .passengerCount(Integer.parseInt(values[3]))
                 .distance(Double.parseDouble(values[4]))
-                .pickupZoneId(Integer.parseInt(values[7]))
-                .dropOffZoneId(Integer.parseInt(values[8]))
+                .pickupZone(this.getNYCTaxiZone(Integer.parseInt(values[7])))
+                .dropOffZone(this.getNYCTaxiZone(Integer.parseInt(values[8])))
                 .paymentTypeId(Integer.parseInt(values[9]))
                 .tollAmount(Double.parseDouble(values[14]))
                 .totalAmount(Double.parseDouble(values[16]))

@@ -1,6 +1,9 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
+import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,6 +37,8 @@ class TaxiRideMapperTest {
                 ""              // 17 - congestion_surcharge
         };
 
+        Map<Integer, NYCTaxiZone> zoneIndex = NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
+
         TaxiRide actualEntity = testInstance.map(String.join(",", values));
         TaxiRide expectedEntity = TaxiRide.builder()
                 .pickupTimeStr(pickupTimeStr)
@@ -41,8 +46,8 @@ class TaxiRideMapperTest {
                 .id(actualEntity.getId())
                 .passengerCount(1)
                 .distance(1.5)
-                .pickupZoneId(151)
-                .dropOffZoneId(239)
+                .pickupZone(zoneIndex.get(151))
+                .dropOffZone(zoneIndex.get(239))
                 .paymentTypeId(1)
                 .tollAmount(0.0)
                 .totalAmount(9.95)
