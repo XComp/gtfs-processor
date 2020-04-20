@@ -11,7 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,7 +27,7 @@ public class MultiThreadedStableEntityLoader<E extends Entity<?>> extends Abstra
     private final int threadPoolSize;
 
     @Override
-    public void load(Queue<E> entityQueue, int limit) throws IOException {
+    public void load(BlockingQueue<E> entityQueue, int limit) throws IOException {
         List<Future<E>> futures = Lists.newArrayList();
         ExecutorService threadPool = Executors.newFixedThreadPool(this.threadPoolSize);
         int lineCount = 0;

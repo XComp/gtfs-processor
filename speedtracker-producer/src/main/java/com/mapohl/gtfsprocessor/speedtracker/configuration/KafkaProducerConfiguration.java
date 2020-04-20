@@ -17,6 +17,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @Configuration
 public class KafkaProducerConfiguration {
@@ -43,7 +44,7 @@ public class KafkaProducerConfiguration {
     public KafkaEmitService<Long, SpeedTracker> kafkaEmitService(
             KafkaTemplate<Long, SpeedTracker> kafkaTemplate,
             NewTopic speedTrackerTopic) {
-        return new KafkaEmitService<>(kafkaTemplate, speedTrackerTopic);
+        return new KafkaEmitService<>(kafkaTemplate, speedTrackerTopic, new ArrayBlockingQueue<>(5));
     }
 
     @Bean

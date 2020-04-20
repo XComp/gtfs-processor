@@ -2,9 +2,9 @@ package com.mapohl.gtfsprocessor.speedtracker;
 
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.BackgroundEntityLoader;
 import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.EntityLoader;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
-import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.MultiThreadedStableEntityLoader;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +43,8 @@ public class SpeedTrackerProducer implements CommandLineRunner {
             timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).parse(args[1], Instant::from);
         }
 
-        EntityLoader<SpeedTracker> entityLoader = new MultiThreadedStableEntityLoader<>(
-                csvFilePath, this.entityMapper, 8)
+        EntityLoader<SpeedTracker> entityLoader = new BackgroundEntityLoader<>(
+                csvFilePath, this.entityMapper)
                 .withEntityFilter(v -> v.getCreationTime().isAfter(timeThreshold));
 
         this.kafkaEmitService.emit(entityLoader, Duration.ofMinutes(1), ChronoUnit.MINUTES);

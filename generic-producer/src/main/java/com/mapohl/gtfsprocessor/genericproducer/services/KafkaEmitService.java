@@ -14,9 +14,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +26,11 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
 
     private final KafkaTemplate<ID, E> kafkaTemplate;
     private final NewTopic kafkaTopic;
+    private final BlockingQueue<E> entityQueue;
+
+    public KafkaEmitService(KafkaTemplate<ID, E> kafkaTemplate, NewTopic kafkaTopic) {
+        this(kafkaTemplate, kafkaTopic, new ArrayBlockingQueue<>(Integer.MAX_VALUE));
+    }
 
     public void emit(EntityLoader<E> entityLoader) throws Exception {
         this.emit(entityLoader, Duration.ofSeconds(1), ChronoUnit.SECONDS);
@@ -37,15 +41,14 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
     }
 
     public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy, Duration realtimeTimeSlotLength) throws Exception {
-        Queue<E> entityQueue = new ConcurrentLinkedQueue<>();
-        entityLoader.load(entityQueue);
+        entityLoader.load(this.entityQueue);
 
         Instant currentTime = null;
         Instant nextTimeSlot = null;
 
         int entityCount = 0;
         while (!entityQueue.isEmpty() || !entityLoader.endOfData()) {
-            E entity = entityQueue.poll();
+            E entity = entityQueue.take();
 
             if (entity == null) {
                 continue;
