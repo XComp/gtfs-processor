@@ -7,6 +7,7 @@ import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.Background
 import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.EntityLoader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
 import picocli.CommandLine;
 
 import java.time.Duration;
@@ -18,7 +19,7 @@ import java.util.concurrent.Callable;
 
 @Slf4j
 @RequiredArgsConstructor
-public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Integer> {
+public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Integer>, CommandLineRunner {
 
     private final EntityMapper<E> entityMapper;
     private final KafkaEmitService<ID, E> kafkaEmitService;
@@ -63,5 +64,14 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
         this.kafkaEmitService.emit(entityLoader, timeSlotDuration, this.logAccuracy, realTimeSlotDuration);
 
         return 0;
+    }
+
+    @Override
+    public void run(String... args) {
+        int returnCode = new CommandLine(new EntityProducer<>(
+                this.entityMapper,
+                this.kafkaEmitService)).execute(args);
+
+        System.exit(returnCode);
     }
 }
