@@ -14,7 +14,7 @@ import java.util.Map;
 public class KafkaTopicConfiguration {
 
     @Bean
-    public KafkaAdmin kafkaAdmin(@Value("${kafka.bootstrapAddress}") String bootstrapAddress) {
+    public KafkaAdmin kafkaAdmin(@Value("${kafka.bootstrap-servers}") String bootstrapAddress) {
         Map<String, Object> configs = Maps.newHashMap();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
 

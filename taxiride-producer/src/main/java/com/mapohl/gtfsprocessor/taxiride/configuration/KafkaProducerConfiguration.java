@@ -17,18 +17,17 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 
 @Configuration
 public class KafkaProducerConfiguration {
 
-    @Value(value = "${kafka.bootstrapAddress}")
-    private String bootstrapAddress;
+    @Value(value = "${kafka.bootstrap-servers}")
+    private String kafkaBrokers;
 
     @Bean
     public ProducerFactory<Long, TaxiRide> producerFactory() {
         Map<String, Object> configProps = Maps.newHashMap();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapAddress);
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaBrokers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
