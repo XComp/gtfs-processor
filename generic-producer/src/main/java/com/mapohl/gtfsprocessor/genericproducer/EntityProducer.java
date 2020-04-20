@@ -43,6 +43,9 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
     @CommandLine.Option(names = {"-l", "--log-accuracy"}, defaultValue = "MINUTES")
     private ChronoUnit logAccuracy;
 
+    @CommandLine.Option(names = {"-h", "--header-lines"}, defaultValue = "1")
+    private int initialLinesToIgnore;
+
     @Override
     public Integer call() throws Exception {
         final Instant timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -57,6 +60,7 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
         log.info("  Log accuracy (--log-accuracy): {}", this.logAccuracy);
 
         EntityLoader<E> entityLoader = new BackgroundEntityLoader<>(this.csvFilePath, this.entityMapper)
+                .withInitialLinesToIgnore(this.initialLinesToIgnore)
                 .withEntityFilter(v -> !v.getCreationTime().isBefore(timeThreshold));
 
         Duration timeSlotDuration = Duration.of(this.timeSlotLength, this.timeSlotLengthTimeUnit);

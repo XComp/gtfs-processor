@@ -6,9 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
+import java.util.zip.GZIPInputStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,21 +26,29 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
 
         @Override
         public void run() {
-            int entityCount = 0;
-            try (BufferedReader reader = new BufferedReader(new FileReader(BackgroundEntityLoader.this.csvFilePath))) {
-                String line = reader.readLine();
-                while (line != null && entityCount++ < limit) {
-                    if (BackgroundEntityLoader.this.process(line)) {
-                        E entity = BackgroundEntityLoader.this.entityMapper.map(line);
-                        if (BackgroundEntityLoader.this.process(entity)) {
-                            this.entityQueue.put(entity);
-                        }
-                    }
-
-                    line = reader.readLine();
+            try {
+                InputStream iStream = new FileInputStream(BackgroundEntityLoader.this.csvFilePath);
+                if (BackgroundEntityLoader.this.csvFilePath.endsWith(".gz")) {
+                    iStream = new GZIPInputStream(iStream);
                 }
 
-                BackgroundEntityLoader.this.endOfDataReached();
+                int entityCount = 0;
+                int lineCount = 0;
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(iStream, Charset.defaultCharset()))) {
+                    String line = reader.readLine();
+                    while (line != null && entityCount++ < limit) {
+                        if (++lineCount > BackgroundEntityLoader.this.firstLinesToIgnore && BackgroundEntityLoader.this.process(line)) {
+                            E entity = BackgroundEntityLoader.this.entityMapper.map(line);
+                            if (BackgroundEntityLoader.this.process(entity)) {
+                                this.entityQueue.put(entity);
+                            }
+                        }
+
+                        line = reader.readLine();
+                    }
+
+                    BackgroundEntityLoader.this.endOfDataReached();
+                }
             } catch (IOException | InterruptedException e) {
                 throw new IllegalStateException(e);
             }
@@ -45,6 +57,18 @@ public class BackgroundEntityLoader<E extends Entity<?>> extends AbstractEntityL
 
     private final String csvFilePath;
     private final EntityMapper<E> entityMapper;
+
+    private int firstLinesToIgnore = 0;
+
+    public BackgroundEntityLoader<E> withInitialLinesToIgnore(int lineCount) {
+        this.firstLinesToIgnore = lineCount;
+
+        return this;
+    }
+
+    public BackgroundEntityLoader<E> ignoreHeader() {
+        return this.withInitialLinesToIgnore(1);
+    }
 
     @Override
     public void load(BlockingQueue<E> entityQueue, int limit) throws Exception {
