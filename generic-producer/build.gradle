@@ -3,6 +3,7 @@ jar.archiveBaseName = 'generic-producer'
 dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-stream-binder-kafka'
+    implementation group: 'info.picocli', name: 'picocli'
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
     implementation group: 'com.google.guava', name: 'guava'

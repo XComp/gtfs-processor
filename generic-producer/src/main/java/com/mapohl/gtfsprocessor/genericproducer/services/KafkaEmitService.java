@@ -32,14 +32,6 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
         this(kafkaTemplate, kafkaTopic, new ArrayBlockingQueue<>(Integer.MAX_VALUE));
     }
 
-    public void emit(EntityLoader<E> entityLoader) throws Exception {
-        this.emit(entityLoader, Duration.ofSeconds(1), ChronoUnit.SECONDS);
-    }
-
-    public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy) throws Exception {
-        this.emit(entityLoader, timeSlotLength, initialAccuracy, Duration.ofSeconds(1));
-    }
-
     public void emit(EntityLoader<E> entityLoader, Duration timeSlotLength, TemporalUnit initialAccuracy, Duration realtimeTimeSlotLength) throws Exception {
         entityLoader.load(this.entityQueue);
 
