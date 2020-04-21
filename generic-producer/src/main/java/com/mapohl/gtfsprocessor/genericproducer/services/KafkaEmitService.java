@@ -59,7 +59,7 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
             }
 
             while (!entityTime.isBefore(nextTimeSlot)) {
-                log.info("{} sent for {}s (second to next emission: {}).",
+                log.info("{} sent for {} (second to next emission: {}).",
                         entityCount == 1 ? "1 row was" : entityCount + " rows were",
                         INSTANT_FORMATTER.format(currentTime),
                         INSTANT_FORMATTER.format(entityTime));
@@ -74,7 +74,7 @@ public class KafkaEmitService<ID, E extends Entity<ID>> {
             entityCount++;
         }
 
-        log.info("Final emission: {} sent for {}s.",
+        log.info("Final emission: {} sent for {}.",
                 entityCount == 1 ? "1 row was" : entityCount + " rows were",
                 INSTANT_FORMATTER.format(currentTime));
     }
