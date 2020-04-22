@@ -75,8 +75,3 @@ dockerCompose {
     waitForTcpPorts = false
     projectName = project.name
 }
-
-project.subprojects.each { subProject ->
-    subProject.test.dependsOn composeUp
-    subProject.test.finalizedBy composeDown
-}
