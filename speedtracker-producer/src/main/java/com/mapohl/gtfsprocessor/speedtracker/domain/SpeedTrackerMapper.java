@@ -9,7 +9,7 @@ public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
 
     public static List<LinkPoint> parseLinkPoints(String linkPointStr) {
         int index;
-        int nextIndex = 0;
+        int nextIndex = -1;
 
         List<LinkPoint> linkPoints = Lists.newArrayList();
         while (true) {
@@ -62,8 +62,8 @@ public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
                 .creationTimeStr(precedingValues[4])
                 .linkId(Integer.parseInt(precedingValues[5]))
                 .linkPoints(linkPoints)
-                .borough(succeedingValues[4])
-                .description(succeedingValues[5])
+                .borough(succeedingValues[5])
+                .description(succeedingValues[6])
                 .build();
     }
 }
