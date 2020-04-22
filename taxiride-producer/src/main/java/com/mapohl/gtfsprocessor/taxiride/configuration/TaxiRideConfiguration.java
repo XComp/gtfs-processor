@@ -3,8 +3,10 @@ package com.mapohl.gtfsprocessor.taxiride.configuration;
 import com.google.common.collect.Maps;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
+import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRideMapper;
+import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -12,6 +14,7 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +22,8 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.Map;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
 
 @Configuration
 public class TaxiRideConfiguration {
@@ -63,7 +68,13 @@ public class TaxiRideConfiguration {
     }
 
     @Bean
-    public EntityMapper<TaxiRide> entityMapper() {
-        return new TaxiRideMapper();
+    @Scope(value = SCOPE_SINGLETON)
+    public Map<Integer, NYCTaxiZone> nycTaxiZoneIndex() {
+        return NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
+    }
+
+    @Bean
+    public EntityMapper<TaxiRide> entityMapper(Map<Integer, NYCTaxiZone> nycTaxiZoneIndex) {
+        return new TaxiRideMapper(nycTaxiZoneIndex);
     }
 }

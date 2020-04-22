@@ -1,15 +1,22 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
-import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
+import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest(classes = TaxiRideConfiguration.class)
 class TaxiRideMapperTest {
 
-    private TaxiRideMapper testInstance = new TaxiRideMapper();
+    @Autowired
+    private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
+
+    @Autowired
+    private TaxiRideMapper testInstance;
 
     @Test
     void map() {
@@ -37,8 +44,6 @@ class TaxiRideMapperTest {
                 ""              // 17 - congestion_surcharge
         };
 
-        Map<Integer, NYCTaxiZone> zoneIndex = NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
-
         TaxiRide actualEntity = testInstance.map(String.join(",", values));
         TaxiRide expectedEntity = TaxiRide.builder()
                 .pickupTimeStr(pickupTimeStr)
@@ -46,8 +51,8 @@ class TaxiRideMapperTest {
                 .id(actualEntity.getId())
                 .passengerCount(1)
                 .distance(1.5)
-                .pickupZone(zoneIndex.get(151))
-                .dropOffZone(zoneIndex.get(239))
+                .pickupZone(this.nycTaxiZoneIndex.get(151))
+                .dropOffZone(this.nycTaxiZoneIndex.get(239))
                 .paymentTypeId(1)
                 .tollAmount(0.0)
                 .totalAmount(9.95)

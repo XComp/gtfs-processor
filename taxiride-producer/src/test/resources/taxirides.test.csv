@@ -1,0 +1,4 @@
+VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type,fare_amount,extra,mta_tax,tip_amount,tolls_amount,improvement_surcharge,total_amount,congestion_surcharge
+2,2009-01-01 00:05:07,2009-01-01 00:05:32,1,.00,1,N,193,193,2,2.5,0.5,0.5,0,0,0.3,3.8,
+2,2009-01-01 00:05:12,2009-01-01 00:05:59,1,.00,1,N,264,193,2,0,0,0,0,0,0,0,
+2,2009-01-01 00:06:01,2009-01-01 00:06:55,6,.00,1,N,264,193,2,0,0,0,0,0,0,0,

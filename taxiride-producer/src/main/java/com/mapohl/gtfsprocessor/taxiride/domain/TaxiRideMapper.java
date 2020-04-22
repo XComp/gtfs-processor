@@ -3,18 +3,19 @@ package com.mapohl.gtfsprocessor.taxiride.domain;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
 import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
 public class TaxiRideMapper implements EntityMapper<TaxiRide> {
 
-    private transient Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
+    private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
+
+    public TaxiRideMapper(Map<Integer, NYCTaxiZone> nycTaxiZoneIndex) {
+        this.nycTaxiZoneIndex = nycTaxiZoneIndex;
+    }
 
     private NYCTaxiZone getNYCTaxiZone(int zoneId) {
-        if (this.nycTaxiZoneIndex == null) {
-            this.nycTaxiZoneIndex = NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
-        }
-
         return this.nycTaxiZoneIndex.get(zoneId);
     }
 

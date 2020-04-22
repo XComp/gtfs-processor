@@ -11,10 +11,8 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation group: 'info.picocli', name: 'picocli'
 
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-//        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-//    }
-//    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
-//    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation group: 'org.springframework.kafka', name: 'spring-kafka-test'
 }
