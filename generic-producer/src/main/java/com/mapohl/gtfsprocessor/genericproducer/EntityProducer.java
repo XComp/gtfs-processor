@@ -77,10 +77,8 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
 
     @Override
     public void run(String... args) {
-        int returnCode = new CommandLine(new EntityProducer<>(
+        new CommandLine(new EntityProducer<>(
                 this.entityMapper,
                 this.kafkaEmitService)).execute(args);
-
-        System.exit(returnCode);
     }
 }
