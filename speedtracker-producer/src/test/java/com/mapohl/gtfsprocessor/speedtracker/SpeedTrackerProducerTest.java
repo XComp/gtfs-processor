@@ -3,8 +3,7 @@ package com.mapohl.gtfsprocessor.speedtracker;
 import com.mapohl.gtfsprocessor.genericproducer.EntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
-import com.mapohl.gtfsprocessor.speedtracker.configuration.KafkaProducerConfiguration;
-import com.mapohl.gtfsprocessor.speedtracker.configuration.KafkaTopicConfiguration;
+import com.mapohl.gtfsprocessor.speedtracker.configuration.SpeedTrackerConfiguration;
 import com.mapohl.gtfsprocessor.speedtracker.domain.LinkPoint;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -34,7 +33,7 @@ import java.util.Map;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = {KafkaProducerConfiguration.class, KafkaTopicConfiguration.class})
+@SpringBootTest(classes = {SpeedTrackerConfiguration.class})
 @DirtiesContext
 @EmbeddedKafka
 public class SpeedTrackerProducerTest {
