@@ -1,0 +1,5 @@
+kafka:
+  bootstrap-servers: ${spring.embedded.kafka.brokers}
+  topic: speedtrackers-test
+  partition-count: 1
+  replication-factor: 1
