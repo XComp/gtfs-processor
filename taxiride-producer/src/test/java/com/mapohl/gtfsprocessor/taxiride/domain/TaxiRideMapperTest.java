@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,10 +19,11 @@ class TaxiRideMapperTest {
     @Autowired
     private TaxiRideMapper testInstance;
 
+    @DisplayName("Parse String to create TaxiRide entity")
     @Test
-    void map() {
-        String pickupTimeStr = "2019-01-01 00:46:40.0";
-        String dropOffTimeStr = "2019-01-01 00:53:20.0";
+    void mapStringToEntity() {
+        String pickupTimeStr = "2019-01-01 00:46:40";
+        String dropOffTimeStr = "2019-01-01 00:53:20";
 
         String[] values = new String[]{
                 "1",            // 0 - VendorID
