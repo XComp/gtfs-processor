@@ -21,7 +21,7 @@ class SpeedTrackerMapperTest {
 
     private SpeedTrackerMapper testInstance = new SpeedTrackerMapper();
 
-    @DisplayName("Parse Strings to create LinkPoint lists")
+    @DisplayName("Parse String to create LinkPoint lists")
     @ParameterizedTest(name = "Parse \"{0}\"")
     @MethodSource("getLinkPointTestData")
     void parseLinkPoints(String input, double... expectedLatLon) {
@@ -57,24 +57,25 @@ class SpeedTrackerMapperTest {
         );
     }
 
+    @DisplayName("Parse String to create SpeedTracker entity")
     @Test
-    void map() {
+    void mapStringToEntity() {
         String creationTimeStr = "2020-01-09 14:40:47.0";
         Instant creationTime = LocalDateTime.parse(creationTimeStr, DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
         String[] values = new String[]{
-                "1",                                                    // ID
-                "10.5",                                                 // SPEED
-                "1337",                                                 // TRAVEL_TIME
-                "-101",                                                 // STATUS
-                creationTimeStr,                                        // DATA_AS_OF
-                "0",                                                    // LINK_ID
-                "40.78819,-73.79052 40.7870405,-73.77592 40.786440",    // LINK_POINTS
-                "em...CoD",                                             // ENCODED_POLY_LINE
-                "BBBBBBBB",                                             // ENCODED_POLY_LINE_LVLS
-                "NYC-DOT-Region 10",                                    // OWNER
-                "4362247",                                              // TRANSCOM_ID
-                "Queens",                                               // BOROUGH
-                "Link description"                                      // LINK_NAME
+                "1",                                                     // ID
+                "10.5",                                                  // SPEED
+                "1337",                                                  // TRAVEL_TIME
+                "-101",                                                  // STATUS
+                creationTimeStr,                                         // DATA_AS_OF
+                "0",                                                     // LINK_ID
+                "\"40.78819,-73.79052 40.7870405,-73.77592 40.786440\"", // LINK_POINTS
+                "em...CoD",                                              // ENCODED_POLY_LINE
+                "BBBBBBBB",                                              // ENCODED_POLY_LINE_LVLS
+                "NYC-DOT-Region 10",                                     // OWNER
+                "4362247",                                               // TRANSCOM_ID
+                "Queens",                                                // BOROUGH
+                "Link description"                                       // LINK_NAME
         };
 
         SpeedTracker expectedEntity = SpeedTracker.builder()
