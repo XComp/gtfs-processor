@@ -23,7 +23,17 @@ used in this was used to extract the interesting information out of the `*.geojs
 
 The resulting lookup table was saved under `src/main/resources/nyc_taxi_zones.csv.gz`.
 
-## Commands
+## Execution
+
+`tmux.sh` can be used to start a session with two producers and two consumers being started. The script 
+can be started from within a TMux session:
+```bash
+./tmux.sh start
+```
+
+All processes can be stopped: `./tmux.sh stop`
+
+### Commands
 
 Start the Kafka infrastructure:
 ```bash
