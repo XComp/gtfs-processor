@@ -1,20 +1,13 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
-import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.Map;
 
-public class TaxiRideMapper implements EntityMapper<String, TaxiRide> {
-
-    private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
+public class TaxiRideMapper extends AbstractTaxiRideMapper<TaxiRide> {
 
     public TaxiRideMapper(Map<Integer, NYCTaxiZone> nycTaxiZoneIndex) {
-        this.nycTaxiZoneIndex = nycTaxiZoneIndex;
-    }
-
-    private NYCTaxiZone getNYCTaxiZone(int zoneId) {
-        return this.nycTaxiZoneIndex.get(zoneId);
+        super(nycTaxiZoneIndex);
     }
 
     // 0 - VendorID
