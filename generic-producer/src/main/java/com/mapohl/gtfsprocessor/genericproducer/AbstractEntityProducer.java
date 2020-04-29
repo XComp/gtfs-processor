@@ -49,7 +49,7 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
     @CommandLine.Option(names = {"-h", "--header-lines"}, defaultValue = "1")
     private int initialLinesToIgnore;
 
-    @CommandLine.Option(names = {"-l", "--line-limit"}, defaultValue = "10000")
+    @CommandLine.Option(names = {"-l", "--line-limit"}, defaultValue = Integer.MAX_VALUE + "")
     private int lineLimit;
 
     @CommandLine.Option(names = {"-e", "--entity-limit"}, defaultValue = Integer.MAX_VALUE + "")
