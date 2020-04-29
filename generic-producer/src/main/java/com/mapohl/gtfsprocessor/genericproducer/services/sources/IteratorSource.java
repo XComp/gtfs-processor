@@ -74,13 +74,13 @@ public class IteratorSource<I, E extends Entity<?>> implements EntitySource<E> {
             }
 
             E entity = this.peek();
-            if (timePeriod.timeIsAfterTimePeriod(entity.getEventTime())) {
+            if (entity == null ||
+                    timePeriod.timeIsAfterTimePeriod(entity.getEventTime())) {
                 return null;
             }
 
             I input = this.loadNextInput();
             if (timePeriod.timeIsBeforeTimePeriod(entity.getEventTime())) {
-                // TODO: we might want to return these entities anyway
                 log.debug("Entity is skipped: {}", entity);
             } else {
                 this.downstreamEntityQueues.forEach(q -> q.add(input));

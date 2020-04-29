@@ -24,7 +24,6 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
 
     private boolean hasData = true;
 
-    // TODO: this method can be generalized
     @Override
     public E take(TimePeriod timePeriod) {
         while (true) {
@@ -32,15 +31,15 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
                 throw new NoSuchElementException();
             }
 
-            if (this.entityQueue.isEmpty() ||
-                    timePeriod.timeIsAfterTimePeriod(this.entityQueue.peek().getEventTime())) {
+            E entity = this.peek();
+            if (entity == null ||
+                    timePeriod.timeIsAfterTimePeriod(entity.getEventTime())) {
                 return null;
             }
 
-            E entity = this.entityQueue.remove();
+            entity = this.entityQueue.remove();
             if (timePeriod.timeIsBeforeTimePeriod(entity.getEventTime())) {
-                // TODO: we might want to return these entities anyway
-                log.warn("Entity is skipped: {}", entity);
+                log.debug("Entity is skipped: {}", entity);
             } else {
                 return entity;
             }
@@ -49,7 +48,7 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
 
     @Override
     public E peek() {
-        return this.entityQueue.isEmpty() ? null : this.entityQueue.peek();
+        return this.entityQueue.peek();
     }
 
     @Override
