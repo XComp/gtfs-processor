@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
+import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,21 +13,13 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
+import static java.time.format.DateTimeFormatter.*;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaxiRide implements Entity<Long> {
-
-    static DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .append(ISO_LOCAL_DATE)
-            .appendLiteral(' ')
-            .append(ISO_LOCAL_TIME)
-            .toFormatter();
 
     private long id;
 
@@ -51,6 +44,6 @@ public class TaxiRide implements Entity<Long> {
 
     @Override
     public Instant getEventTime() {
-        return LocalDateTime.parse(this.getPickupTimeStr(), DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
+        return NYCTaxiRideUtils.parse(this.getPickupTimeStr());
     }
 }
