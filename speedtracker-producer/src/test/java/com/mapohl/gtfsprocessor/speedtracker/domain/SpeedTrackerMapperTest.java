@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,19 +20,6 @@ class SpeedTrackerMapperTest {
 
     private SpeedTrackerMapper testInstance = new SpeedTrackerMapper();
 
-    @DisplayName("Parse String to create LinkPoint lists")
-    @ParameterizedTest(name = "Parse \"{0}\"")
-    @MethodSource("getLinkPointTestData")
-    void parseLinkPoints(String input, double... expectedLatLon) {
-        List<LinkPoint> expected = Lists.newArrayList();
-        for (int i = 0; i < expectedLatLon.length; i += 2) {
-            expected.add(new LinkPoint(expectedLatLon[i], expectedLatLon[i+1]));
-        }
-
-        List<LinkPoint> actual = SpeedTrackerMapper.parseLinkPoints(input);
-        assertEquals(expected, actual);
-    }
-
     private static Stream<Arguments> getLinkPointTestData() {
         return Stream.of(
                 Arguments.arguments("", new double[0]),
@@ -42,19 +28,32 @@ class SpeedTrackerMapperTest {
                 Arguments.arguments("40.63511", new double[0]),
                 Arguments.arguments("40.63511,", new double[0]),
                 Arguments.arguments("40.63511,-", new double[0]),
-                Arguments.arguments("40.63511,-7", new double[] {40.63511, -7.0}),
-                Arguments.arguments("40.63511,-74.19581", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 ", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 asd", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381,", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381,-", new double[] {40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381, asd-74.19336,40.63086", new double[] { 40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381,asd -74.19336,40.63086", new double[] { 40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 asd 40.63381,-74.19336", new double[] { 40.63511, -74.19581}),
-                Arguments.arguments("40.63511,-74.19581 40.63381,-74.19336 40.63086", new double[] { 40.63511, -74.19581, 40.63381, -74.19336})
+                Arguments.arguments("40.63511,-7", new double[]{40.63511, -7.0}),
+                Arguments.arguments("40.63511,-74.19581", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 ", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 asd", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381,", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381,-", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381, asd-74.19336,40.63086", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381,asd -74.19336,40.63086", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 asd 40.63381,-74.19336", new double[]{40.63511, -74.19581}),
+                Arguments.arguments("40.63511,-74.19581 40.63381,-74.19336 40.63086", new double[]{40.63511, -74.19581, 40.63381, -74.19336})
         );
+    }
+
+    @DisplayName("Parse String to create LinkPoint lists")
+    @ParameterizedTest(name = "Parse \"{0}\"")
+    @MethodSource("getLinkPointTestData")
+    void parseLinkPoints(String input, double... expectedLatLon) {
+        List<LinkPoint> expected = Lists.newArrayList();
+        for (int i = 0; i < expectedLatLon.length; i += 2) {
+            expected.add(new LinkPoint(expectedLatLon[i], expectedLatLon[i + 1]));
+        }
+
+        List<LinkPoint> actual = SpeedTrackerMapper.parseLinkPoints(input);
+        assertEquals(expected, actual);
     }
 
     @DisplayName("Parse String to create SpeedTracker entity")

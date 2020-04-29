@@ -2,27 +2,38 @@ package com.mapohl.gtfsprocessor.genericproducer;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
-import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.BackgroundEntityLoader;
-import com.mapohl.gtfsprocessor.genericproducer.services.entityloader.EntityLoader;
+import com.mapohl.gtfsprocessor.genericproducer.services.EntityEmissionScheduler;
+import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
+import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
+import com.mapohl.gtfsprocessor.genericproducer.utils.LineIterator;
+import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.kafka.core.KafkaTemplate;
 import picocli.CommandLine;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
+import java.util.zip.GZIPInputStream;
 
 @Slf4j
 @RequiredArgsConstructor
 public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Integer>, CommandLineRunner {
 
-    private final EntityMapper<E> entityMapper;
-    private final KafkaEmitService<ID, E> kafkaEmitService;
+    private final KafkaTemplate<ID, E> kafkaTemplate;
+    private final String kafkaTopic;
+    private final EntityMapper<String, E> entityMapper;
 
     @CommandLine.Option(names = {"-c", "--csv"}, required = true)
     private String csvFilePath;
@@ -40,45 +51,56 @@ public class EntityProducer<ID, E extends Entity<ID>> implements Callable<Intege
     @CommandLine.Option(names = {"-ru", "--real-time-slot-time-unit"}, defaultValue = "SECONDS")
     private ChronoUnit realTimeSlotLengthTimeUnit;
 
-    @CommandLine.Option(names = {"-l", "--log-accuracy"}, defaultValue = "MINUTES")
-    private ChronoUnit logAccuracy;
-
     @CommandLine.Option(names = {"-h", "--header-lines"}, defaultValue = "1")
     private int initialLinesToIgnore;
+
+    @CommandLine.Option(names = {"-l", "--line-limit"}, defaultValue = "10000")
+    private int lineLimit;
 
     @CommandLine.Option(names = {"-e", "--entity-limit"}, defaultValue = Integer.MAX_VALUE + "")
     private int entityLimit;
 
+    private InputStreamReader createReader() throws IOException {
+        InputStream inputStream = new FileInputStream(this.csvFilePath);
+        if (this.csvFilePath.endsWith(".gz")) {
+            inputStream = new GZIPInputStream(inputStream);
+        }
+
+        return new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+    }
+
     @Override
     public Integer call() throws Exception {
-        final Instant timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                .withZone(ZoneOffset.UTC)
-                .parse(this.inclusiveStartTimeStr, Instant::from);
-
         log.info("Parameter information:");
         log.info("  CSV file path (--csv): {}", this.csvFilePath);
-        log.info("  Start time (--start-time): {}", timeThreshold);
+        log.info("  Start time (--start-time): {}", this.inclusiveStartTimeStr);
         log.info("  Time slot length (--time-slot-length/time-unit): {} {}", this.timeSlotLength, this.timeSlotLengthTimeUnit);
         log.info("  Real time slot length (--real-time-slot-length/time-unit): {} {}", this.realTimeSlotLength, this.realTimeSlotLengthTimeUnit);
-        log.info("  Log accuracy (--log-accuracy): {}", this.logAccuracy);
         log.info("  Header lines (--header-lines): {}", this.initialLinesToIgnore);
+        log.info("  Line limit (--line-limit): {}", this.lineLimit);
         log.info("  Entity limit (--entity-limit): {}", this.entityLimit);
 
-        EntityLoader<E> entityLoader = new BackgroundEntityLoader<>(this.csvFilePath, this.entityMapper, this.entityLimit)
-                .withInitialLinesToIgnore(this.initialLinesToIgnore)
-                .withEntityFilter(v -> !v.getCreationTime().isBefore(timeThreshold));
+        try (Reader reader = this.createReader()) {
+            LineIterator lineIterator = new LineIterator(reader, this.lineLimit, this.initialLinesToIgnore);
+            EntitySource<E> entitySource = new IteratorSource<>(
+                    this.kafkaTopic, lineIterator, this.entityMapper, this.entityLimit);
+            EntityEmissionScheduler<ID, E> entityEmissionScheduler = new EntityEmissionScheduler<>(
+                    this.kafkaTemplate, entitySource);
 
-        Duration timeSlotDuration = Duration.of(this.timeSlotLength, this.timeSlotLengthTimeUnit);
-        Duration realTimeSlotDuration = Duration.of(this.realTimeSlotLength, this.realTimeSlotLengthTimeUnit);
-        this.kafkaEmitService.emit(entityLoader, timeSlotDuration, this.logAccuracy, realTimeSlotDuration);
+            final Instant timeThreshold = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                    .withZone(ZoneOffset.UTC)
+                    .parse(this.inclusiveStartTimeStr, Instant::from);
+            Duration timeSlotDuration = Duration.of(this.timeSlotLength, this.timeSlotLengthTimeUnit);
+            Duration realTimeSlotDuration = Duration.of(this.realTimeSlotLength, this.realTimeSlotLengthTimeUnit);
+
+            entityEmissionScheduler.emit(new TimePeriod(timeThreshold, timeSlotDuration), realTimeSlotDuration);
+        }
 
         return 0;
     }
 
     @Override
     public void run(String... args) {
-        new CommandLine(new EntityProducer<>(
-                this.entityMapper,
-                this.kafkaEmitService)).execute(args);
+        new CommandLine(this).execute(args);
     }
 }

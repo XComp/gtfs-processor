@@ -5,7 +5,7 @@ import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 
 import java.util.List;
 
-public class SpeedTrackerMapper implements EntityMapper<SpeedTracker> {
+public class SpeedTrackerMapper implements EntityMapper<String, SpeedTracker> {
 
     public static List<LinkPoint> parseLinkPoints(String linkPointStr) {
         int index;

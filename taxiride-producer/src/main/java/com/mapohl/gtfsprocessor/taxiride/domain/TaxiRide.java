@@ -50,7 +50,7 @@ public class TaxiRide implements Entity<Long> {
     }
 
     @Override
-    public Instant getCreationTime() {
-        return LocalDateTime.parse(this.getDropOffTimeStr(), DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
+    public Instant getEventTime() {
+        return LocalDateTime.parse(this.getPickupTimeStr(), DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
     }
 }

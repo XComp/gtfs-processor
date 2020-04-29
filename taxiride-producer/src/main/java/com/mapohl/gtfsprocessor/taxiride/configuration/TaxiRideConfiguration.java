@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.taxiride.configuration;
 
 import com.google.common.collect.Maps;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRideMapper;
@@ -28,6 +27,9 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Configuration
 public class TaxiRideConfiguration {
 
+    @Value(value = "${kafka.topic}")
+    private String kafkaTopic;
+
     @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapServersStr;
 
@@ -40,10 +42,15 @@ public class TaxiRideConfiguration {
     }
 
     @Bean
-    public NewTopic topic(@Value(value = "${kafka.topic}") String topicName,
-                          @Value(value = "${kafka.partition-count}") int partitionCount,
-                          @Value(value = "${kafka.replication-factor}") short replicationFactor) {
-        return new NewTopic(topicName, partitionCount, replicationFactor);
+    public NewTopic topic(
+            @Value(value = "${kafka.partition-count}") int partitionCount,
+            @Value(value = "${kafka.replication-factor}") short replicationFactor) {
+        return new NewTopic(this.kafkaTopic(), partitionCount, replicationFactor);
+    }
+
+    @Bean
+    public String kafkaTopic() {
+        return this.kafkaTopic;
     }
 
     @Bean
@@ -62,19 +69,13 @@ public class TaxiRideConfiguration {
     }
 
     @Bean
-    public KafkaEmitService<Long, TaxiRide> kafkaEmitService(KafkaTemplate<Long, TaxiRide> kafkaTemplate,
-                                                             NewTopic topic) {
-        return new KafkaEmitService<>(kafkaTemplate, topic);
-    }
-
-    @Bean
     @Scope(value = SCOPE_SINGLETON)
     public Map<Integer, NYCTaxiZone> nycTaxiZoneIndex() {
         return NYCTaxiZoneLoader.loadNYCTaxiZoneIndex();
     }
 
     @Bean
-    public EntityMapper<TaxiRide> entityMapper(Map<Integer, NYCTaxiZone> nycTaxiZoneIndex) {
+    public EntityMapper<String, TaxiRide> entityMapper(Map<Integer, NYCTaxiZone> nycTaxiZoneIndex) {
         return new TaxiRideMapper(nycTaxiZoneIndex);
     }
 }

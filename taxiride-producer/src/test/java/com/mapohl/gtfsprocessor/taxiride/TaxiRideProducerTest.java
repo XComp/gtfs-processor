@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.taxiride;
 
 import com.mapohl.gtfsprocessor.genericproducer.EntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -45,10 +45,10 @@ class TaxiRideProducerTest {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Autowired
-    private KafkaEmitService<Long, TaxiRide> kafkaEmitService;
+    private KafkaTemplate<Long, TaxiRide> kafkaTemplate;
 
     @Autowired
-    private EntityMapper<TaxiRide> entityMapper;
+    private EntityMapper<String, TaxiRide> entityMapper;
 
     private EntityProducer<Long, TaxiRide> testInstance;
 
@@ -59,7 +59,7 @@ class TaxiRideProducerTest {
 
     @BeforeEach
     public void setUp() {
-        this.testInstance = new EntityProducer<>(this.entityMapper, this.kafkaEmitService);
+        this.testInstance = new EntityProducer<>(this.kafkaTemplate, this.testTopic, this.entityMapper);
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -110,7 +110,7 @@ class TaxiRideProducerTest {
                         .build()
         );
 
-        this.testInstance.run("--csv", "src/test/resources/taxirides.test.csv");
+        this.testInstance.run("--csv", "src/test/resources/taxirides.test.csv", "-s", "2009-01-01T00:00:00");
 
         // check that the message was received
         ConsumerRecords<Long, TaxiRide> actualConsumerRecords = KafkaTestUtils.getRecords(this.consumer, 3000);

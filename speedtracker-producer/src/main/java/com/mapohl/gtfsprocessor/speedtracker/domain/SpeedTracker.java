@@ -39,11 +39,11 @@ public class SpeedTracker implements Entity<Long> {
 
     @Override
     public Long getEntityId() {
-        return this.getCreationTime().getEpochSecond() ^ ((long) this.linkId << 31);
+        return this.getEventTime().getEpochSecond() ^ ((long) this.linkId << 31);
     }
 
     @Override
-    public Instant getCreationTime() {
-        return LocalDateTime.parse(this.creationTimeStr, DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
+    public Instant getEventTime() {
+        return LocalDateTime.parse(this.getCreationTimeStr(), DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
     }
 }

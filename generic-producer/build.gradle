@@ -4,7 +4,10 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-stream-binder-kafka'
     implementation group: 'info.picocli', name: 'picocli'
+    implementation group: 'com.google.guava', name: 'guava'
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
-    implementation group: 'com.google.guava', name: 'guava'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    testImplementation group: 'org.mockito', name: 'mockito-core'
 }

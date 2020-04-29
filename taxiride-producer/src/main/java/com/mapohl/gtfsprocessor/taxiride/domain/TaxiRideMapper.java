@@ -1,13 +1,11 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiZoneLoader;
 import org.apache.commons.lang3.RandomUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-public class TaxiRideMapper implements EntityMapper<TaxiRide> {
+public class TaxiRideMapper implements EntityMapper<String, TaxiRide> {
 
     private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
 

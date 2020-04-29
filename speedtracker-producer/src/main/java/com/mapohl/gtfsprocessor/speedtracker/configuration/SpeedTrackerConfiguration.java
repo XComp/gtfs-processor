@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.speedtracker.configuration;
 
 import com.google.common.collect.Maps;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.services.KafkaEmitService;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTrackerMapper;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -23,6 +22,9 @@ import java.util.Map;
 @Configuration
 public class SpeedTrackerConfiguration {
 
+    @Value(value = "${kafka.topic}")
+    private String kafkaTopic;
+
     @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapServersStr;
 
@@ -36,10 +38,14 @@ public class SpeedTrackerConfiguration {
 
     @Bean
     public NewTopic topic(
-            @Value(value = "${kafka.topic}") String topicName,
             @Value(value = "${kafka.partition-count}") int partitionCount,
             @Value(value = "${kafka.replication-factor}") short replicationFactor) {
-        return new NewTopic(topicName, partitionCount, replicationFactor);
+        return new NewTopic(this.kafkaTopic(), partitionCount, replicationFactor);
+    }
+
+    @Bean
+    public String kafkaTopic() {
+        return this.kafkaTopic;
     }
 
     @Bean
@@ -58,14 +64,7 @@ public class SpeedTrackerConfiguration {
     }
 
     @Bean
-    public KafkaEmitService<Long, SpeedTracker> kafkaEmitService(
-            KafkaTemplate<Long, SpeedTracker> kafkaTemplate,
-            NewTopic topic) {
-        return new KafkaEmitService<>(kafkaTemplate, topic);
-    }
-
-    @Bean
-    public EntityMapper<SpeedTracker> entityMapper() {
+    public EntityMapper<String, SpeedTracker> entityMapper() {
         return new SpeedTrackerMapper();
     }
 }

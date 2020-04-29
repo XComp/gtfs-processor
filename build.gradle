@@ -33,9 +33,8 @@ subprojects {
     }
 
     configurations {
-        developmentOnly
-        runtimeClasspath.extendsFrom developmentOnly
         compileOnly.extendsFrom annotationProcessor
+        testCompileOnly.extendsFrom testAnnotationProcessor
     }
 
     dependencyManagement {
@@ -49,6 +48,7 @@ subprojects {
             dependency group: 'com.google.guava', name: 'guava', version: '29.0-jre'
             dependency group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
             dependency group: 'info.picocli', name: 'picocli', version: '4.2.0'
+            dependency group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
         }
     }
 
