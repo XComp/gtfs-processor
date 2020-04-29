@@ -50,7 +50,7 @@ class TaxiRideMapperTest {
         TaxiRide expectedEntity = TaxiRide.builder()
                 .pickupTimeStr(pickupTimeStr)
                 .dropOffTimeStr(dropOffTimeStr)
-                .id(actualEntity.getId())
+                .entityId(actualEntity.getEntityId())
                 .passengerCount(1)
                 .distance(1.5)
                 .pickupZone(this.nycTaxiZoneIndex.get(151))

@@ -32,7 +32,7 @@ public class TaxiRideMapper extends AbstractTaxiRideMapper<TaxiRide> {
     public TaxiRide map(String line) {
         String[] values = line.split(",");
         return TaxiRide.builder()
-                .id(RandomUtils.nextLong())
+                .entityId(RandomUtils.nextLong())
                 .pickupTimeStr(values[1])
                 .dropOffTimeStr(values[2])
                 .passengerCount(Integer.parseInt(values[3]))

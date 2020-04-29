@@ -122,7 +122,7 @@ class TaxiRideProducerTest {
 
             TaxiRide actual = actualConsumerRecord.value();
             TaxiRide expect = expectedEntitiesIterator.next();
-            expect.setId(actual.getId());
+            expect.setEntityId(actual.getEntityId());
 
             assertEquals(expect, actual);
         }

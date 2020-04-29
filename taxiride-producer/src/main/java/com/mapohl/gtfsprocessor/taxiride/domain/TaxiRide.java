@@ -8,12 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-
-import static java.time.format.DateTimeFormatter.*;
 
 @Builder
 @Data
@@ -21,7 +15,7 @@ import static java.time.format.DateTimeFormatter.*;
 @AllArgsConstructor
 public class TaxiRide implements Entity<Long> {
 
-    private long id;
+    private Long entityId;
 
     private String pickupTimeStr;
     private String dropOffTimeStr;
@@ -36,11 +30,6 @@ public class TaxiRide implements Entity<Long> {
     private int paymentTypeId;
     private double tollAmount;
     private double totalAmount;
-
-    @Override
-    public Long getEntityId() {
-        return this.id;
-    }
 
     @Override
     public Instant getEventTime() {
