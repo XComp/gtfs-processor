@@ -44,8 +44,7 @@ public class InstantBuilder {
     }
 
     public Instant build() {
-        Instant instant = Instant.parse(String.format("%04d-%02d-%02dT%02d:%02d:%02dZ",
-                year, month, day, hour, minute, second));
+        Instant instant = Instant.parse(String.format("%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour, minute, second));
         this.initialize();
 
         return instant;

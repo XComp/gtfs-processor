@@ -10,4 +10,9 @@ dependencies {
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
