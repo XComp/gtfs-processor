@@ -1,9 +1,8 @@
 package com.mapohl.gtfsprocessor.genericproducer.domain;
 
-import java.io.Serializable;
 import java.time.Instant;
 
-public interface Entity<ID> extends Serializable, Comparable<Entity<?>> {
+public interface Entity<ID> extends EntityData, Comparable<Entity<?>> {
 
     ID getEntityId();
 
