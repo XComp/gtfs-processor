@@ -1,5 +1,6 @@
 package com.mapohl.gtfsprocessor.speedtracker.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +43,7 @@ public class SpeedTracker implements Entity<Long> {
         return this.getEventTime().getEpochSecond() ^ ((long) this.linkId << 31);
     }
 
+    @JsonIgnore
     @Override
     public Instant getEventTime() {
         return LocalDateTime.parse(this.getCreationTimeStr(), DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);

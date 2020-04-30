@@ -1,5 +1,6 @@
 package com.mapohl.gtfsprocessor.taxiride.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class TaxiRide implements Entity<Long> {
     private double tollAmount;
     private double totalAmount;
 
+    @JsonIgnore
     @Override
     public Instant getEventTime() {
         return NYCTaxiRideUtils.parse(this.getPickupTimeStr());
