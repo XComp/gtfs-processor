@@ -24,13 +24,13 @@ import java.util.Map;
 @Import(BaseTaxiRideConfiguration.class)
 public class TaxiRideConfiguration {
 
-    @Value("${kafka.topic}")
+    @Value("${kafka.taxiride.topic}")
     private String kafkaTopic;
 
     @Bean
     public NewTopic topic(
-            @Value("${kafka.partition-count}") int partitionCount,
-            @Value("${kafka.replication-factor}") short replicationFactor) {
+            @Value("${kafka.taxiride.partition-count}") int partitionCount,
+            @Value("${kafka.taxiride.replication-factor}") short replicationFactor) {
         return new NewTopic(this.kafkaTopic(), partitionCount, replicationFactor);
     }
 

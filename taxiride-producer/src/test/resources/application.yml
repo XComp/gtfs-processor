@@ -1,5 +1,6 @@
 kafka:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
-  topic: taxirides-test
-  partition-count: 1
-  replication-factor: 1
+  taxiride:
+    topic: taxirides-test
+    partition-count: 1
+    replication-factor: 1

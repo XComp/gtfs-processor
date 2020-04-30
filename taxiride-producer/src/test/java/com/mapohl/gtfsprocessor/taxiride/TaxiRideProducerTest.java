@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @EmbeddedKafka
 class TaxiRideProducerTest {
 
-    @Value(value = "${kafka.topic}")
+    @Value(value = "${kafka.taxiride.topic}")
     private String testTopic;
 
     @Autowired
