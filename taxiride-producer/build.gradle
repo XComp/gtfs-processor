@@ -16,3 +16,16 @@ dependencies {
     }
     testImplementation group: 'org.springframework.kafka', name: 'spring-kafka-test'
 }
+
+def defaultSpringConfiguration = "TaxiRideProducer"
+def springConfigurations = [
+    "taxiRide": "TaxiRideProducer",
+    "taxiRideStart": "TaxiRideStartProducer",
+]
+
+springBoot.mainClassName = "com.mapohl.gtfsprocessor.taxiride.${defaultSpringConfiguration}"
+springConfigurations.each { prop, mainClassName ->
+    if (project.hasProperty(prop))
+        springBoot.mainClassName = "com.mapohl.gtfsprocessor.taxiride.${mainClassName}"
+}
+

@@ -4,3 +4,7 @@ kafka:
     topic: taxirides
     partition-count: 1
     replication-factor: 1
+  taxiridestart:
+    topic: taxiridestarts
+    partition-count: 1
+    replication-factor: 1

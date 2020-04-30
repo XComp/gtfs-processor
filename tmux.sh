@@ -10,7 +10,7 @@ dummy_consumer_cmd="./gradlew dummy-consumer:bootRun -Pargs=\"--kafka.topic="
 taxirides_consumer_cmd="${dummy_consumer_cmd}taxirides\""
 speedtrackers_consumer_cmd="${dummy_consumer_cmd}speedtrackers\""
 
-taxiride_producer_cmd="./gradlew taxiride-producer:bootRun --args=\"-c ${taxirides_filepath} -s 2019-01-01T00:00:00\""
+taxiride_producer_cmd="./gradlew taxiride-producer:bootRun -PtaxiRide --args=\"-c ${taxirides_filepath} -s 2019-01-01T00:00:00\""
 speedtracker_producer_cmd="./gradlew speedtracker-producer:bootRun --args=\"-c ${speedtrackers_filepath} -s 2019-01-01T00:00:00\""
 
 # run stop command killing all but the current pane
