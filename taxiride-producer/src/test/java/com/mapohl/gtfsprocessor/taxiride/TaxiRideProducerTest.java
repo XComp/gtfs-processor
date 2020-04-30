@@ -50,17 +50,16 @@ class TaxiRideProducerTest {
     @Autowired
     private EntityMapper<String, TaxiRide> entityMapper;
 
+    @Autowired
     private EntityProducer<Long, TaxiRide> testInstance;
-
-    private Consumer<Long, TaxiRide> consumer;
 
     @Autowired
     private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
 
+    private Consumer<Long, TaxiRide> consumer;
+
     @BeforeEach
     public void setUp() {
-        this.testInstance = new EntityProducer<>(this.kafkaTemplate, this.testTopic, this.entityMapper);
-
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         this.consumer = new DefaultKafkaConsumerFactory<>(configs, new LongDeserializer(), new JsonDeserializer<>(TaxiRide.class)).createConsumer();
