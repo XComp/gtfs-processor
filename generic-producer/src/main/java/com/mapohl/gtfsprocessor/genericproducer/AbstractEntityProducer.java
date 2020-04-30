@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.genericproducer;
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntityQueue;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
@@ -28,10 +29,10 @@ import java.util.concurrent.Callable;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implements Callable<Integer>, CommandLineRunner {
 
-    private final KafkaTemplate<ID, E> kafkaTemplate;
-    private final String kafkaTopic;
-    private final EntityMapper<I, E> entityMapper;
-    private final EntityQueue<I, E>[] downstreamEntityQueues;
+    private final EntityMapper<I, E> initialEntityMapper;
+    private final String initialTopic;
+    private final KafkaTemplate<ID, E> initialKafkaTemplate;
+    private final DownstreamEntityEmissionService<I, ID, E>[] downstreamEmissionServices;
 
     @CommandLine.Option(names = {"-s", "--start-time"}, defaultValue = "1970-01-01T00:00:00")
     private String inclusiveStartTimeStr;
@@ -83,16 +84,24 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
         return new TimePeriod(this.getStartTime(), this.getTimeSlotDuration());
     }
 
-    protected EntitySource<E> createEntitySource(I... data) {
+    protected EntitySource<E> createEntitySource(String... data) {
         return this.createEntitySource(Lists.newArrayList(data).iterator());
     }
 
-    protected EntitySource<E> createEntitySource(Iterator<I> iterator) {
-        return new IteratorSource<>(this.getKafkaTopic(),
-                iterator,
-                this.getEntityMapper(),
+    protected EntitySource<E> createEntitySource(Iterator<String> iterator) {
+        return new IteratorSource(iterator,
+                this.getInitialEntityMapper(),
                 this.getEntityLimit(),
                 this.getDownstreamEntityQueues());
+    }
+
+    private EntityQueue<I, E>[] getDownstreamEntityQueues() {
+        EntityQueue<I, E>[] downstreamQueues = new EntityQueue[this.downstreamEmissionServices.length];
+        for (int i = 0; i < this.downstreamEmissionServices.length; i++) {
+            downstreamQueues[i] = this.downstreamEmissionServices[i].getEntitySource();
+        }
+
+        return downstreamQueues;
     }
 
     @Override

@@ -2,10 +2,12 @@ package com.mapohl.gtfsprocessor.genericproducer;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.gtfsprocessor.genericproducer.services.EntityEmissionScheduler;
-import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntityQueue;
+import com.mapohl.gtfsprocessor.genericproducer.services.InitialEntityEmissionService;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.utils.LineIterator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import picocli.CommandLine;
@@ -19,16 +21,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 @Slf4j
-public class EntityProducer<ID, E extends Entity<ID>> extends AbstractEntityProducer<String, ID, E> {
+@Getter
+public class CsvEntityProducer<ID, E extends Entity<ID>> extends AbstractEntityProducer<String, ID, E> {
 
     @CommandLine.Option(names = {"-c", "--csv"}, required = true)
     private String csvFilePath;
 
-    public EntityProducer(KafkaTemplate<ID, E> kafkaTemplate,
-                          String kafkaTopic,
-                          EntityMapper<String, E> entityMapper,
-                          EntityQueue<String, E>... downstreamEntityQueues) {
-        super(kafkaTemplate, kafkaTopic, entityMapper, downstreamEntityQueues);
+    public CsvEntityProducer(EntityMapper<String, E> initialEntityMapper,
+                             String initialTopic,
+                             KafkaTemplate<ID, E> initialKafkaTemplate,
+                             DownstreamEntityEmissionService<String, ID, E>... downstreamEmissionServices) {
+        super(initialEntityMapper, initialTopic, initialKafkaTemplate, downstreamEmissionServices);
     }
 
     protected InputStreamReader createReader() throws IOException {
@@ -60,11 +63,14 @@ public class EntityProducer<ID, E extends Entity<ID>> extends AbstractEntityProd
 
         try (Reader reader = this.createReader()) {
             EntitySource<E> entitySource = this.createEntitySource(reader);
-            EntityEmissionScheduler<ID, E> entityEmissionScheduler = new EntityEmissionScheduler(
-                    this.getKafkaTemplate(),
-                    entitySource);
+            InitialEntityEmissionService<ID, E> initialEmissionScheduler = new InitialEntityEmissionService<>(
+                    entitySource,
+                    this.getInitialTopic(),
+                    this.getInitialKafkaTemplate()
+            );
 
-            entityEmissionScheduler.emit(this.getInitialTimePeriod(), this.getRealTimeSlotDuration());
+            EntityEmissionScheduler scheduler = new EntityEmissionScheduler(initialEmissionScheduler, this.getDownstreamEmissionServices());
+            scheduler.emit(this.getInitialTimePeriod(), this.getRealTimeSlotDuration());
         }
 
         return 0;

@@ -19,8 +19,8 @@ dependencies {
 
 def defaultSpringConfiguration = "TaxiRideProducer"
 def springConfigurations = [
-    "taxiRide": "TaxiRideProducer",
-    "taxiRideStart": "TaxiRideStartProducer",
+        "taxiRide"     : "TaxiRideProducer",
+        "taxiRideStart": "TaxiRideStartProducer",
 ]
 
 springBoot.mainClassName = "com.mapohl.gtfsprocessor.taxiride.${defaultSpringConfiguration}"

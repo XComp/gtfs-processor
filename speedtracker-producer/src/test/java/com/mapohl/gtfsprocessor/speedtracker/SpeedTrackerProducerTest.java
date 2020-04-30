@@ -1,7 +1,6 @@
 package com.mapohl.gtfsprocessor.speedtracker;
 
-import com.mapohl.gtfsprocessor.genericproducer.EntityProducer;
-import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.CsvEntityProducer;
 import com.mapohl.gtfsprocessor.speedtracker.configuration.SpeedTrackerConfiguration;
 import com.mapohl.gtfsprocessor.speedtracker.domain.LinkPoint;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -45,19 +43,12 @@ public class SpeedTrackerProducerTest {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Autowired
-    private KafkaTemplate<Long, SpeedTracker> kafkaTemplate;
-
-    @Autowired
-    private EntityMapper<String, SpeedTracker> entityMapper;
-
-    private EntityProducer<Long, SpeedTracker> testInstance;
+    private CsvEntityProducer<Long, SpeedTracker> testInstance;
 
     private Consumer<Long, SpeedTracker> consumer;
 
     @BeforeEach
     public void setUp() {
-        this.testInstance = new EntityProducer<>(this.kafkaTemplate, this.testTopic, this.entityMapper);
-
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         this.consumer = new DefaultKafkaConsumerFactory<>(configs, new LongDeserializer(), new JsonDeserializer<>(SpeedTracker.class)).createConsumer();

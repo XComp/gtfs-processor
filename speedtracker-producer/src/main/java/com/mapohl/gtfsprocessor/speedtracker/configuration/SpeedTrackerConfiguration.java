@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.speedtracker.configuration;
 
 import com.google.common.collect.Maps;
+import com.mapohl.gtfsprocessor.genericproducer.CsvEntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTracker;
 import com.mapohl.gtfsprocessor.speedtracker.domain.SpeedTrackerMapper;
@@ -66,5 +67,10 @@ public class SpeedTrackerConfiguration {
     @Bean
     public EntityMapper<String, SpeedTracker> entityMapper() {
         return new SpeedTrackerMapper();
+    }
+
+    @Bean
+    public CsvEntityProducer<Long, SpeedTracker> producer(EntityMapper<String, SpeedTracker> entityMapper, KafkaTemplate<Long, SpeedTracker> kafkaTemplate) {
+        return new CsvEntityProducer(entityMapper, this.kafkaTopic, kafkaTemplate);
     }
 }

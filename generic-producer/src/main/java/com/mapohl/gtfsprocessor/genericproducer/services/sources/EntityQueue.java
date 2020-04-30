@@ -6,5 +6,7 @@ public interface EntityQueue<I, E extends Entity<?>> extends EntitySource<E> {
 
     void add(I input);
 
-    void endOfData();
+    default void endOfDataReached() {
+        this.add(null);
+    }
 }

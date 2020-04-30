@@ -3,10 +3,8 @@ package com.mapohl.gtfsprocessor.taxiride;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideStartConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
-@SpringBootApplication
 public class TaxiRideStartProducer {
 
     public static void main(String[] args) {

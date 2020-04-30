@@ -1,101 +1,68 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import com.google.common.collect.AbstractIterator;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
-public class IteratorSource<I, E extends Entity<?>> implements EntitySource<E> {
-
-    @Getter
-    private final String topic;
+public class IteratorSource<I, E extends Entity<?>> extends AbstractIterator<E> implements EntitySource<E> {
 
     private final Iterator<I> inputIterator;
-
     private final EntityMapper<I, E> entityMapper;
-
     private final int entityLimit;
-    private final List<EntityQueue<I, ? extends Entity<?>>> downstreamEntityQueues;
-    private I nextInput;
+    private final EntityQueue<I, ? extends Entity<?>>[] downstreamEntityQueues;
+
     private int entityCount = 0;
 
-    public IteratorSource(String topic,
-                          Iterator<I> inputIterator,
+    public IteratorSource(Iterator<I> inputIterator,
                           EntityMapper<I, E> entityMapper,
                           EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
-        this(topic, inputIterator, entityMapper, Integer.MAX_VALUE, downstreamEntityQueues);
+        this(inputIterator, entityMapper, Integer.MAX_VALUE, downstreamEntityQueues);
     }
 
-    public IteratorSource(String topic,
-                          Iterator<I> inputIterator,
-                          EntityMapper<I, E> entityMapper,
-                          int entityLimit,
-                          EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
-        this.topic = topic;
+    public IteratorSource(Iterator<I> inputIterator, EntityMapper<I, E> entityMapper, int entityLimit, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
         this.inputIterator = inputIterator;
         this.entityMapper = entityMapper;
         this.entityLimit = entityLimit;
-        this.downstreamEntityQueues = Lists.newArrayList(downstreamEntityQueues);
-
-        this.loadNextInput();
+        this.downstreamEntityQueues = downstreamEntityQueues;
     }
 
-    public boolean hasNext() {
-        return this.entityCount < this.entityLimit && this.nextInput != null;
-    }
-
-    private I loadNextInput() {
-        I input = this.nextInput;
-
-        if (this.inputIterator.hasNext() && this.entityCount + 1 < this.entityLimit) {
-            this.nextInput = this.inputIterator.next();
-        } else {
-            this.nextInput = null;
+    private void propagateInputToDownstreamQueues(I input) {
+        for (EntityQueue<I, ?> downstreamEntityQueue : this.downstreamEntityQueues) {
+            downstreamEntityQueue.add(input);
         }
-
-        return input;
     }
 
-    @Override
-    public E take(TimePeriod timePeriod) {
-        Preconditions.checkNotNull(timePeriod);
-
-        while (true) {
-            if (!this.hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            E entity = this.peek();
-            if (entity == null ||
-                    timePeriod.timeIsAfterTimePeriod(entity.getEventTime())) {
-                return null;
-            }
-
-            I input = this.loadNextInput();
-            if (timePeriod.timeIsBeforeTimePeriod(entity.getEventTime())) {
-                log.debug("Entity is skipped: {}", entity);
-            } else {
-                this.downstreamEntityQueues.forEach(q -> q.add(input));
-                if (this.nextInput == null) {
-                    this.downstreamEntityQueues.forEach(q -> q.endOfData());
-                }
-
-                this.entityCount++;
-                return entity;
-            }
+    private void propagateEndOfDataDownstream() {
+        for (EntityQueue<I, ?> downstreamEntityQueue : this.downstreamEntityQueues) {
+            downstreamEntityQueue.endOfDataReached();
         }
     }
 
     @Override
-    public E peek() {
-        return this.nextInput != null ? this.entityMapper.map(this.nextInput) : null;
+    protected E computeNext() {
+        if (this.inputIterator.hasNext() && this.entityCount < this.entityLimit) {
+            this.entityCount++;
+            I input = this.inputIterator.next();
+
+            this.propagateInputToDownstreamQueues(input);
+
+            if (!this.inputIterator.hasNext() || this.entityCount >= this.entityLimit) {
+                // propagate end of data as early as possible
+                this.propagateEndOfDataDownstream();
+            }
+            return this.entityMapper.map(input);
+        }
+
+        return this.endOfData();
+    }
+
+    @Override
+    public Instant peekNextEventTime() {
+        return this.hasNext() ? this.peek().getEventTime() : null;
     }
 }

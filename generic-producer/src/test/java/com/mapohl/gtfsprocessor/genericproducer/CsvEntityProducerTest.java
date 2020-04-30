@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = {TestEntityConfiguration.class})
 @DirtiesContext
 @EmbeddedKafka
-public class EntityProducerTest {
+public class CsvEntityProducerTest {
 
     private InstantBuilder instantBuilder = new InstantBuilder(2019, 1, 2, 1, 0, 0);
 
@@ -52,13 +52,13 @@ public class EntityProducerTest {
     @Autowired
     private EntityMapper<String, TestEntity> entityMapper;
 
-    private EntityProducer<Integer, TestEntity> testInstance;
+    private CsvEntityProducer<Integer, TestEntity> testInstance;
 
     private Consumer<Integer, TestEntity> consumer;
 
     @BeforeEach
     public void setUp() {
-        this.testInstance = new EntityProducer<>(this.kafkaTemplate, this.testTopic, this.entityMapper);
+        this.testInstance = new CsvEntityProducer<>(this.entityMapper, this.testTopic, this.kafkaTemplate);
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");

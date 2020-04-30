@@ -1,7 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.configuration;
 
 import com.google.common.collect.Maps;
-import com.mapohl.gtfsprocessor.genericproducer.EntityProducer;
+import com.mapohl.gtfsprocessor.genericproducer.CsvEntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
@@ -61,7 +61,7 @@ public class TaxiRideConfiguration {
     }
 
     @Bean
-    public EntityProducer<Long, TaxiRide> producer(KafkaTemplate<Long, TaxiRide> kafkaTemplate, String kafkaTopic, EntityMapper<String, TaxiRide> entityMapper) {
-        return new EntityProducer<>(kafkaTemplate, kafkaTopic, entityMapper);
+    public CsvEntityProducer<Long, TaxiRide> producer(EntityMapper<String, TaxiRide> entityMapper, KafkaTemplate<Long, TaxiRide> kafkaTemplate) {
+        return new CsvEntityProducer(entityMapper, this.kafkaTopic, kafkaTemplate);
     }
 }

@@ -26,11 +26,16 @@ class EntityEmissionSchedulerTest {
     private String topic = "test-topic";
     private KafkaTemplate<Integer, TestEntity> kafkaTemplate;
     private List<TestEntity> testData;
-    private EntitySource<TestEntity> entitySource;
+
+    private EntityEmissionScheduler testInstance;
 
     @BeforeEach
     public void mockKafkaTemplate() {
         kafkaTemplate = Mockito.mock(KafkaTemplate.class);
+
+        EntitySource<TestEntity> source = new IteratorSource<>(testData.iterator(), new IdentityMapper<>());
+        InitialEntityEmissionService emissionService = new InitialEntityEmissionService<>(source, topic, kafkaTemplate);
+        testInstance = new EntityEmissionScheduler(emissionService);
     }
 
     @BeforeEach
@@ -45,14 +50,10 @@ class EntityEmissionSchedulerTest {
                 new TestEntity(6, instantBuilder.hour(3).minute(0).build(), 6),
                 new TestEntity(7, instantBuilder.hour(3).minute(30).build(), 7)
         );
-
-        entitySource = new IteratorSource<>(topic, testData.iterator(), new IdentityMapper<>());
     }
 
     @Test
     public void testEmission() throws Exception {
-        EntityEmissionScheduler<Integer, TestEntity> testInstance = new EntityEmissionScheduler(kafkaTemplate, entitySource);
-
         Instant start = instantBuilder.hour(0).minute(15).build();
         Instant end = instantBuilder.hour(1).minute(45).build();
         testInstance.emit(new TimePeriod(start, end), Duration.ofMillis(50));

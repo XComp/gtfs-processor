@@ -1,49 +1,69 @@
 package com.mapohl.gtfsprocessor.genericproducer.services;
 
-import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
-import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
+import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
-public class EntityEmissionScheduler<ID, E extends Entity<ID>> {
+public class EntityEmissionScheduler {
 
-    private static final DateTimeFormatter INSTANT_FORMATTER = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneOffset.UTC);
+    private final List<BaseEntityEmissionService> entityEmissionServices;
 
-    private final KafkaTemplate<ID, E> kafkaTemplate;
+    public EntityEmissionScheduler(InitialEntityEmissionService initialEmissionService,
+                                   DownstreamEntityEmissionService... otherEmissionServices) {
+        this.entityEmissionServices = Lists.newArrayList(initialEmissionService);
+        this.entityEmissionServices.addAll(Lists.newArrayList(otherEmissionServices));
+    }
 
-    private final EntitySource<E> entitySource;
+    private static String format(Instant instant) {
+        return instant.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME);
+    }
 
-    public void emit(TimePeriod initialTimePeriod, Duration realtimeTimeSlotLength) throws Exception {
-        TimePeriod currentTimeslot = initialTimePeriod;
-
-        int entityCount = 0;
-        while (this.entitySource.hasNext()) {
-            E entity = this.entitySource.take(currentTimeslot);
-            if (entity == null) {
-                log.info("{} sent for {} (second to next emission: {}).",
-                        entityCount == 1 ? "1 row was" : entityCount + " rows were",
-                        INSTANT_FORMATTER.format(currentTimeslot.getInclusiveStartTime()),
-                        INSTANT_FORMATTER.format(this.entitySource.peek().getEventTime()));
-                entityCount = 0;
-                currentTimeslot = currentTimeslot.next();
-                Thread.sleep(realtimeTimeSlotLength.toMillis());
-                continue;
+    private boolean hasData() {
+        for (BaseEntityEmissionService entityEmissionService : this.entityEmissionServices) {
+            if (entityEmissionService.hasNext()) {
+                return true;
             }
-
-            this.kafkaTemplate.send(this.entitySource.getTopic(), entity);
-            entityCount++;
         }
 
-        log.info("Final emission: {} sent for {}.",
-                entityCount == 1 ? "1 row was" : entityCount + " rows were",
-                INSTANT_FORMATTER.format(currentTimeslot.getInclusiveStartTime()));
+        return false;
+    }
+
+    public void emit(TimePeriod initialTimePeriod, Duration realtimeTimeSlotLength) throws Exception {
+        TimePeriod currentTimePeriod = initialTimePeriod;
+
+        long startMillis = System.currentTimeMillis();
+        int totalEntityCount = 0;
+        while (this.hasData()) {
+            int entityCount = 0;
+            Instant earliestEventTime = Instant.ofEpochMilli(Long.MAX_VALUE);
+            for (BaseEntityEmissionService entityEmissionService : this.entityEmissionServices) {
+                entityCount += entityEmissionService.emit(currentTimePeriod);
+
+                Instant nextEventTime = entityEmissionService.peekNextEventTime();
+                if (nextEventTime != null && earliestEventTime.isAfter(nextEventTime)) {
+                    earliestEventTime = nextEventTime;
+                }
+            }
+
+            log.info("{} sent for {} (second to next emission: {}).",
+                    entityCount == 1 ? "1 row was" : entityCount + " rows were",
+                    format(currentTimePeriod.getInclusiveStartTime()),
+                    format(earliestEventTime));
+
+            totalEntityCount += entityCount;
+            currentTimePeriod = currentTimePeriod.next();
+            Thread.sleep(realtimeTimeSlotLength.toMillis());
+        }
+
+        log.info("Emission finished after {}ms: {} emitted.",
+                System.currentTimeMillis() - startMillis,
+                totalEntityCount == 1 ? "1 entity was" : totalEntityCount + " entities were");
     }
 }

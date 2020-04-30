@@ -1,6 +1,6 @@
 package com.mapohl.gtfsprocessor.taxiride;
 
-import com.mapohl.gtfsprocessor.genericproducer.EntityProducer;
+import com.mapohl.gtfsprocessor.genericproducer.CsvEntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
@@ -51,7 +51,7 @@ class TaxiRideProducerTest {
     private EntityMapper<String, TaxiRide> entityMapper;
 
     @Autowired
-    private EntityProducer<Long, TaxiRide> testInstance;
+    private CsvEntityProducer<Long, TaxiRide> testInstance;
 
     @Autowired
     private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
