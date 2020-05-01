@@ -20,7 +20,7 @@ public class TimePeriod {
         Preconditions.checkNotNull(inclusiveStartTime);
         Preconditions.checkNotNull(exclusiveEndTime);
 
-        Preconditions.checkArgument(inclusiveStartTime.isBefore(exclusiveEndTime));
+        Preconditions.checkArgument(inclusiveStartTime.isBefore(exclusiveEndTime), "Start time '" + inclusiveStartTime + "' is not before '" + exclusiveEndTime + "'.");
 
         this.inclusiveStartTime = inclusiveStartTime;
         this.exclusiveEndTime = exclusiveEndTime;
