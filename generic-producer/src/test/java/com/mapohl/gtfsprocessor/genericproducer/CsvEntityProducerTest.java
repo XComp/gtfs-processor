@@ -3,7 +3,6 @@ package com.mapohl.gtfsprocessor.genericproducer;
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
-import com.mapohl.gtfsprocessor.genericproducer.utils.InstantBuilder;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -30,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.INSTANT_BUILDER;
+import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,8 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext
 @EmbeddedKafka
 public class CsvEntityProducerTest {
-
-    private InstantBuilder instantBuilder = new InstantBuilder(2019, 1, 2, 1, 0, 0);
 
     @Value(value = "${kafka.topic}")
     private String testTopic;
@@ -74,17 +73,17 @@ public class CsvEntityProducerTest {
     @Test
     public void testEmittingDataFromCsv() {
         List<TestEntity> expectedEntities = Lists.newArrayList(
-                // new TestEntity(0, instantBuilder.hour(0).minute(0).buildInstant(), 0),
-                // new TestEntity(1, instantBuilder.hour(0).minute(30).buildInstant(), 1),
-                new TestEntity(2, instantBuilder.hour(1).minute(0).build(), 2),
-                new TestEntity(3, instantBuilder.hour(1).minute(30).build(), 3),
-                new TestEntity(4, instantBuilder.hour(2).minute(0).build(), 4),
-                new TestEntity(5, instantBuilder.hour(2).minute(30).build(), 5),
-                new TestEntity(6, instantBuilder.hour(3).minute(0).build(), 6),
-                new TestEntity(7, instantBuilder.hour(3).minute(30).build(), 7)
+                // createEntity(0, 0),
+                // createEntity(0, 30),
+                createEntity(1, 0),
+                createEntity(1, 30),
+                createEntity(2, 0),
+                createEntity(2, 30),
+                createEntity(3, 0),
+                createEntity(3, 30)
         );
 
-        String startTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).format(instantBuilder.build());
+        String startTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).format(INSTANT_BUILDER.hour(1).build());
         this.testInstance.run("--csv", "src/test/resources/test.csv",
                 "--header-lines", "1",
                 "--start-time", startTime,

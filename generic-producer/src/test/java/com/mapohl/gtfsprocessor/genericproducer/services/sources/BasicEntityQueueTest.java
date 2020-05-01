@@ -1,23 +1,16 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
-import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
-import com.mapohl.gtfsprocessor.genericproducer.utils.InstantBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BasicEntityQueueTest {
 
-    private static InstantBuilder instantBuilder = new InstantBuilder();
     private BasicEntityQueue<TestEntity, TestEntity> testInstance;
-
-    private static TestEntity createEntity(int hour) {
-        Preconditions.checkArgument(hour >= 0 && hour < 24);
-        return new TestEntity(hour, instantBuilder.hour(hour).build(), hour);
-    }
 
     @BeforeEach
     public void initializeTestInstance() {
@@ -37,7 +30,7 @@ class BasicEntityQueueTest {
         testInstance.add(e);
 
         assertTrue(testInstance.hasNext());
-        assertEquals(instantBuilder.build(), testInstance.peekNextEventTime());
+        assertEquals(e.getEventTime(), testInstance.peekNextEventTime());
         assertEquals(e, testInstance.next());
     }
 
@@ -56,9 +49,11 @@ class BasicEntityQueueTest {
         TestEntity e0 = createEntity(0);
         TestEntity e1 = createEntity(1);
 
+        // added in reverse order
         testInstance.add(e1);
         testInstance.add(e0);
 
+        // order gets fixed
         assertEquals(e0, testInstance.next());
         assertEquals(e1, testInstance.next());
     }

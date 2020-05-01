@@ -1,4 +1,4 @@
-package com.mapohl.gtfsprocessor.genericproducer.utils;
+package com.mapohl.gtfsprocessor.genericproducer.testutils;
 
 import com.google.common.base.Preconditions;
 
