@@ -1,12 +1,9 @@
 package com.mapohl.gtfsprocessor.genericproducer.utils;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import com.google.common.base.Preconditions;
 
 import java.time.Instant;
 
-@Accessors(fluent = true)
-@Setter
 public class InstantBuilder {
 
     private final int defaultYear;
@@ -52,5 +49,45 @@ public class InstantBuilder {
         this.initialize();
 
         return instant;
+    }
+
+    public InstantBuilder year(int year) {
+        this.year = year;
+        return this;
+    }
+
+    public InstantBuilder month(int month) {
+        Preconditions.checkArgument(month > 0 && month <= 12);
+
+        this.month = month;
+        return this;
+    }
+
+    public InstantBuilder day(int day) {
+        Preconditions.checkArgument(day > 0 && day <= 31);
+
+        this.day = day;
+        return this;
+    }
+
+    public InstantBuilder hour(int hour) {
+        Preconditions.checkArgument(hour >= 0 && hour < 24);
+
+        this.hour = hour;
+        return this;
+    }
+
+    public InstantBuilder minute(int minute) {
+        Preconditions.checkArgument(minute >= 0 && minute < 60);
+
+        this.minute = minute;
+        return this;
+    }
+
+    public InstantBuilder second(int second) {
+        Preconditions.checkArgument(second >= 0 && second < 60);
+
+        this.second = second;
+        return this;
     }
 }
