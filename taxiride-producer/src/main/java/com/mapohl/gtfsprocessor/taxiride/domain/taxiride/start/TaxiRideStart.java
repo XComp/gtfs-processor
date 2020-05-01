@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.start;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
@@ -22,6 +23,7 @@ public class TaxiRideStart implements Entity<Integer> {
 
     private Integer entityId;
 
+    @JsonProperty("pickup_time")
     private String pickupTimeStr;
 
     private int passengerCount;

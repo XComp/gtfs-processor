@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.end;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
@@ -22,6 +23,7 @@ public class TaxiRideEnd implements Entity<Integer> {
 
     private Integer entityId;
 
+    @JsonProperty("drop_off_time")
     private String dropOffTimeStr;
 
     private double distance;
