@@ -1,4 +1,7 @@
-package com.mapohl.gtfsprocessor.taxiride.domain;
+package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.start;
+
+import com.mapohl.gtfsprocessor.taxiride.domain.AbstractTaxiRideMapper;
+import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 
 import java.util.Map;
 

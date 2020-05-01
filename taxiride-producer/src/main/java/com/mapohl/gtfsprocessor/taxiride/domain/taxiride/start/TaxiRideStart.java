@@ -1,9 +1,10 @@
-package com.mapohl.gtfsprocessor.taxiride.domain;
+package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.start;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
+import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

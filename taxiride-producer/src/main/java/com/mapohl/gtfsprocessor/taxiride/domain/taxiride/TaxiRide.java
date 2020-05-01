@@ -1,9 +1,9 @@
-package com.mapohl.gtfsprocessor.taxiride.domain;
+package com.mapohl.gtfsprocessor.taxiride.domain.taxiride;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
+import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
+import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,29 +11,31 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-import static com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils.parse;
-
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class TaxiRideEnd implements Entity<Integer> {
+public class TaxiRide implements Entity<Long> {
 
-    private Integer entityId;
+    private Long entityId;
 
+    private String pickupTimeStr;
     private String dropOffTimeStr;
+
+    private int passengerCount;
 
     private double distance;
 
+    private NYCTaxiZone pickupZone;
     private NYCTaxiZone dropOffZone;
 
+    private int paymentTypeId;
     private double tollAmount;
     private double totalAmount;
 
     @JsonIgnore
     @Override
     public Instant getEventTime() {
-        return parse(this.getDropOffTimeStr());
+        return NYCTaxiRideUtils.parse(this.getPickupTimeStr());
     }
 }

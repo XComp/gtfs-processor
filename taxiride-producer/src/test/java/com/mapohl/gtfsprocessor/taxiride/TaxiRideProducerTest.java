@@ -3,7 +3,7 @@ package com.mapohl.gtfsprocessor.taxiride;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
-import com.mapohl.gtfsprocessor.taxiride.domain.TaxiRide;
+import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.TaxiRide;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
