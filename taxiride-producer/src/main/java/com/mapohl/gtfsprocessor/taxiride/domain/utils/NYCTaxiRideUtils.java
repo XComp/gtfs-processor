@@ -2,6 +2,7 @@ package com.mapohl.gtfsprocessor.taxiride.domain.utils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -20,5 +21,9 @@ public class NYCTaxiRideUtils {
 
     public static Instant parse(String timeStr) {
         return LocalDateTime.parse(timeStr, DATE_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
+    }
+
+    public static String format(Instant time) {
+        return DATE_TIME_FORMATTER.format(time);
     }
 }
