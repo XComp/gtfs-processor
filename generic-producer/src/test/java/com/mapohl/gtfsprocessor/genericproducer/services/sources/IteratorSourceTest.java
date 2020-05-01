@@ -14,18 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IteratorSourceTest {
 
-    private static class TestEntityMapper implements EntityMapper<Integer, TestEntity> {
-
-        @Override
-        public TestEntity map(Integer hour) {
-            return createEntity(hour);
-        }
-    }
-
     private static List<Integer> input = Lists.newArrayList();
     private static List<TestEntity> expectedOutput = Lists.newArrayList();
     private static int entityLimit = 4;
-
     private IteratorSource<TestEntity, TestEntity> testInstance;
 
     @BeforeAll
@@ -48,6 +39,14 @@ class IteratorSourceTest {
 
         assertFalse(testInstance.hasNext());
         assertThrows(NoSuchElementException.class, () -> testInstance.next());
+    }
+
+    private static class TestEntityMapper implements EntityMapper<Integer, TestEntity> {
+
+        @Override
+        public TestEntity map(Integer hour) {
+            return createEntity(hour);
+        }
     }
 
 }

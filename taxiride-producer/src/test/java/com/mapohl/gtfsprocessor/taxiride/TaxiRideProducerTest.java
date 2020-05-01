@@ -1,6 +1,5 @@
 package com.mapohl.gtfsprocessor.taxiride;
 
-import com.mapohl.gtfsprocessor.genericproducer.CsvEntityProducer;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
@@ -33,7 +32,7 @@ import java.util.Map;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = TaxiRideConfiguration.class)
+@SpringBootTest(classes = TaxiRideConfiguration.class, args = {"--csv", "src/test/resources/taxirides.test.csv", "-s", "2009-01-01T00:00:00", "-r", "50", "-ru", "MILLIS"})
 @DirtiesContext
 @EmbeddedKafka
 class TaxiRideProducerTest {
@@ -49,9 +48,6 @@ class TaxiRideProducerTest {
 
     @Autowired
     private EntityMapper<String, TaxiRide> entityMapper;
-
-    @Autowired
-    private CsvEntityProducer<Long, TaxiRide> testInstance;
 
     @Autowired
     private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
@@ -108,8 +104,6 @@ class TaxiRideProducerTest {
                         .totalAmount(0.0)
                         .build()
         );
-
-        this.testInstance.run("--csv", "src/test/resources/taxirides.test.csv", "-s", "2009-01-01T00:00:00");
 
         // check that the message was received
         ConsumerRecords<Long, TaxiRide> actualConsumerRecords = KafkaTestUtils.getRecords(this.consumer, 3000);
