@@ -1,49 +1,85 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
-import com.google.common.collect.AbstractIterator;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-@RequiredArgsConstructor
 @Slf4j
-public class BasicEntityQueue<I, E extends Entity<?>> extends AbstractIterator<E> implements EntityQueue<I, E> {
+public class BasicEntityQueue<I, E extends Entity<?>> extends AbstractEntitySource<I, E> implements EntityQueue<I, E> {
 
-    private final Queue<E> entityQueue = new PriorityBlockingQueue<>();
-    private final EntityMapper<I, E> entityMapper;
+    private final Queue<I> entityQueue = new PriorityBlockingQueue<>();
 
     private boolean hasData = true;
 
-    @Override
-    public void add(I input) {
-        if (input == null) {
-            this.hasData = false;
-            return;
-        }
-
-        this.entityQueue.offer(this.entityMapper.map(input));
+    public BasicEntityQueue(EntityMapper<I, E> entityMapper, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
+        super(entityMapper, downstreamEntityQueues);
     }
 
     @Override
-    protected E computeNext() {
-        if (this.entityQueue.isEmpty() && !this.hasData) {
-            return this.endOfData();
+    public void add(I input) {
+        if (!this.hasNext()) {
+            throw new IllegalStateException("The end of data was already reached.");
         }
 
-        if (this.entityQueue.isEmpty()) {
-            log.error("No entities are buffered.");
+        if (input == null) {
+            this.hasData = false;
+
+            if (!this.hasNext()) {
+                this.propagateEndOfDataDownstream();
+            }
+        } else {
+            this.entityQueue.offer(input);
+        }
+    }
+
+    private E peek() {
+        return this.mapOrNull(this.entityQueue.peek());
+    }
+
+    private E poll() {
+        I input = this.entityQueue.poll();
+        this.propagateInputToDownstreamQueues(input);
+        if (!this.hasNext()) {
+            this.propagateEndOfDataDownstream();
         }
 
-        return this.entityQueue.remove();
+        return this.mapOrNull(input);
     }
 
     @Override
     public Instant peekNextEventTime() {
-        return this.hasNext() ? this.peek().getEventTime() : null;
+        return this.isEmpty() ? null : this.peek().getEventTime();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return !this.isEmpty() || this.hasData;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.entityQueue.isEmpty();
+    }
+
+    @Override
+    public E next() {
+        if (!this.hasNext()) {
+            throw new NoSuchElementException();
+        }
+
+        if (this.isEmpty()) {
+            log.error("No entities are buffered.");
+        }
+
+        return this.poll();
+    }
+
+    public int size() {
+        return this.entityQueue.size();
     }
 }

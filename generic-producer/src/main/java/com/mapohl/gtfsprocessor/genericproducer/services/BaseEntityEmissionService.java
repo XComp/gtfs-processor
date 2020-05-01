@@ -24,14 +24,21 @@ public class BaseEntityEmissionService<ID, E extends Entity<ID>, S extends Entit
     }
 
     public int emit(TimePeriod timePeriod) {
+        return this.emit(timePeriod, Integer.MAX_VALUE);
+    }
+
+    public int emit(TimePeriod timePeriod, int entityLimit) {
         int entityCount = 0;
-        while (this.hasNext() && !timePeriod.timeIsAfterTimePeriod(this.peekNextEventTime())) {
+        while (this.hasNext()
+                && !this.nextEventTimeIsAfter(timePeriod)
+                && entityCount < entityLimit) {
             E entity = this.entitySource.next();
 
             if (timePeriod.timeIsBeforeTimePeriod(entity.getEventTime())) {
                 log.debug("Entity was skipped due to its event time ({}) being before the currently processed time period {}.",
                         format(entity.getEventTime()),
                         timePeriod);
+                // TODO: we might want to remove the continue so that we don't lose any enities
                 continue;
             }
 
@@ -44,6 +51,11 @@ public class BaseEntityEmissionService<ID, E extends Entity<ID>, S extends Entit
 
     public boolean hasNext() {
         return this.entitySource.hasNext();
+    }
+
+    public boolean nextEventTimeIsAfter(TimePeriod timePeriod) {
+        Instant eventTime = this.peekNextEventTime();
+        return eventTime == null ? true : timePeriod.timeIsAfterTimePeriod(eventTime);
     }
 
     public Instant peekNextEventTime() {

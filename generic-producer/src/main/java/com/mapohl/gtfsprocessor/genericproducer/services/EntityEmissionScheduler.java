@@ -1,6 +1,5 @@
 package com.mapohl.gtfsprocessor.genericproducer.services;
 
-import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,25 +7,35 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Slf4j
 public class EntityEmissionScheduler {
 
-    private final List<BaseEntityEmissionService> entityEmissionServices;
+    private final BaseEntityEmissionService initialEmissionService;
+    private final int entityLimit;
+    private final BaseEntityEmissionService[] downstreamEmissionServices;
 
     public EntityEmissionScheduler(InitialEntityEmissionService initialEmissionService,
                                    DownstreamEntityEmissionService... otherEmissionServices) {
-        this.entityEmissionServices = Lists.newArrayList(initialEmissionService);
-        this.entityEmissionServices.addAll(Lists.newArrayList(otherEmissionServices));
+        this(initialEmissionService, Integer.MAX_VALUE, otherEmissionServices);
+    }
+
+    public EntityEmissionScheduler(BaseEntityEmissionService initialEmissionService, int entityLimit, BaseEntityEmissionService... downstreamEmissionServices) {
+        this.initialEmissionService = initialEmissionService;
+        this.entityLimit = entityLimit;
+        this.downstreamEmissionServices = downstreamEmissionServices;
     }
 
     private static String format(Instant instant) {
-        return instant.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME);
+        return instant != null ? instant.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME) : "null";
     }
 
     private boolean hasData() {
-        for (BaseEntityEmissionService entityEmissionService : this.entityEmissionServices) {
+        if (this.initialEmissionService.hasNext()) {
+            return true;
+        }
+
+        for (BaseEntityEmissionService entityEmissionService : this.downstreamEmissionServices) {
             if (entityEmissionService.hasNext()) {
                 return true;
             }
@@ -39,15 +48,18 @@ public class EntityEmissionScheduler {
         TimePeriod currentTimePeriod = initialTimePeriod;
 
         long startMillis = System.currentTimeMillis();
+        int initialEntityCount = 0;
         int totalEntityCount = 0;
-        while (this.hasData()) {
-            int entityCount = 0;
-            Instant earliestEventTime = Instant.ofEpochMilli(Long.MAX_VALUE);
-            for (BaseEntityEmissionService entityEmissionService : this.entityEmissionServices) {
+        while (this.hasData() && initialEntityCount < this.entityLimit) {
+            int entityCount = this.initialEmissionService.emit(currentTimePeriod, this.entityLimit - initialEntityCount);
+            initialEntityCount += entityCount;
+            Instant earliestEventTime = this.initialEmissionService.peekNextEventTime();
+
+            for (BaseEntityEmissionService entityEmissionService : this.downstreamEmissionServices) {
                 entityCount += entityEmissionService.emit(currentTimePeriod);
 
                 Instant nextEventTime = entityEmissionService.peekNextEventTime();
-                if (nextEventTime != null && earliestEventTime.isAfter(nextEventTime)) {
+                if (earliestEventTime == null || (nextEventTime != null && earliestEventTime.isAfter(nextEventTime))) {
                     earliestEventTime = nextEventTime;
                 }
             }

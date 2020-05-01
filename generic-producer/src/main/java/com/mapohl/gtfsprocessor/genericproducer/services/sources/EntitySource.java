@@ -8,4 +8,6 @@ import java.util.Iterator;
 public interface EntitySource<E extends Entity<?>> extends Iterator<E> {
 
     Instant peekNextEventTime();
+
+    boolean isEmpty();
 }

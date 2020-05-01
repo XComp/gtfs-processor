@@ -23,6 +23,10 @@ public class InstantBuilder {
     private int minute;
     private int second;
 
+    public InstantBuilder() {
+        this(1970, 1, 1, 0, 0, 0);
+    }
+
     public InstantBuilder(int defaultYear, int defaultMonth, int defaultDay, int defaultHour, int defaultMinute, int defaultSecond) {
         this.defaultYear = defaultYear;
         this.defaultMonth = defaultMonth;

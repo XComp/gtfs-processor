@@ -32,7 +32,7 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
     private final EntityMapper<I, E> initialEntityMapper;
     private final String initialTopic;
     private final KafkaTemplate<ID, E> initialKafkaTemplate;
-    private final DownstreamEntityEmissionService<I, ID, E>[] downstreamEmissionServices;
+    private final DownstreamEntityEmissionService<I, ?, ?>[] downstreamEmissionServices;
 
     @CommandLine.Option(names = {"-s", "--start-time"}, defaultValue = "1970-01-01T00:00:00")
     private String inclusiveStartTimeStr;
@@ -91,12 +91,11 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
     protected EntitySource<E> createEntitySource(Iterator<String> iterator) {
         return new IteratorSource(iterator,
                 this.getInitialEntityMapper(),
-                this.getEntityLimit(),
                 this.getDownstreamEntityQueues());
     }
 
-    private EntityQueue<I, E>[] getDownstreamEntityQueues() {
-        EntityQueue<I, E>[] downstreamQueues = new EntityQueue[this.downstreamEmissionServices.length];
+    private EntityQueue<I, ?>[] getDownstreamEntityQueues() {
+        EntityQueue<I, ?>[] downstreamQueues = new EntityQueue[this.downstreamEmissionServices.length];
         for (int i = 0; i < this.downstreamEmissionServices.length; i++) {
             downstreamQueues[i] = this.downstreamEmissionServices[i].getEntitySource();
         }

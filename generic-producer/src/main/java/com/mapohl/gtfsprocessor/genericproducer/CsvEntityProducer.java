@@ -30,7 +30,7 @@ public class CsvEntityProducer<ID, E extends Entity<ID>> extends AbstractEntityP
     public CsvEntityProducer(EntityMapper<String, E> initialEntityMapper,
                              String initialTopic,
                              KafkaTemplate<ID, E> initialKafkaTemplate,
-                             DownstreamEntityEmissionService<String, ID, E>... downstreamEmissionServices) {
+                             DownstreamEntityEmissionService<String, ?, ?>... downstreamEmissionServices) {
         super(initialEntityMapper, initialTopic, initialKafkaTemplate, downstreamEmissionServices);
     }
 
@@ -69,7 +69,7 @@ public class CsvEntityProducer<ID, E extends Entity<ID>> extends AbstractEntityP
                     this.getInitialKafkaTemplate()
             );
 
-            EntityEmissionScheduler scheduler = new EntityEmissionScheduler(initialEmissionScheduler, this.getDownstreamEmissionServices());
+            EntityEmissionScheduler scheduler = new EntityEmissionScheduler(initialEmissionScheduler, this.getEntityLimit(), this.getDownstreamEmissionServices());
             scheduler.emit(this.getInitialTimePeriod(), this.getRealTimeSlotDuration());
         }
 
