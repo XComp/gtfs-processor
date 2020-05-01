@@ -12,12 +12,14 @@ import java.util.concurrent.PriorityBlockingQueue;
 @Slf4j
 public class BasicEntityQueue<I, E extends Entity<?>> extends AbstractEntitySource<I, E> implements EntityQueue<I, E> {
 
-    private final Queue<I> entityQueue = new PriorityBlockingQueue<>();
+    private final Queue<I> entityQueue;
 
     private boolean hasData = true;
 
     public BasicEntityQueue(EntityMapper<I, E> entityMapper, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
         super(entityMapper, downstreamEntityQueues);
+
+        this.entityQueue = new PriorityBlockingQueue<I>(100, entityMapper.createComparator());
     }
 
     @Override
