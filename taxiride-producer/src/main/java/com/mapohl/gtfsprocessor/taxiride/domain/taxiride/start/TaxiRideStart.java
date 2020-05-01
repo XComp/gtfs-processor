@@ -18,7 +18,6 @@ import static com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils.pa
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TaxiRideStart implements Entity<Integer> {
 
     private Integer entityId;
