@@ -25,8 +25,8 @@ The resulting lookup table was saved under `src/main/resources/nyc_taxi_zones.cs
 
 ## Execution
 
-`tmux.sh` can be used to start a session with two producers and two consumers being started. The script 
-can be started from within a TMux session:
+`tmux.sh` can be used to start a session generating NYC taxi data related events and monitoring 
+the corresponding topics using log consumers. The script can be started from within a TMux session:
 ```bash
 ./tmux.sh start
 ```

@@ -8,6 +8,10 @@ kafka:
     topic: taxiridestarts
     partition-count: 1
     replication-factor: 1
+  intermediateprice:
+    topic: intermediateprices
+    partition-count: 1
+    replication-factor: 1
   taxirideend:
     topic: taxirideends
     partition-count: 1

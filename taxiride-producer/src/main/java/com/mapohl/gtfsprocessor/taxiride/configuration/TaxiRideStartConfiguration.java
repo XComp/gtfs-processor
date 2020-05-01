@@ -17,7 +17,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import java.util.Map;
 
 @Configuration
-@Import({BaseTaxiRideConfiguration.class, TaxiRideEndConfiguration.class})
+@Import({BaseTaxiRideConfiguration.class, IntermediatePriceConfiguration.class, TaxiRideEndConfiguration.class})
 public class TaxiRideStartConfiguration {
 
     @Value("${kafka.taxiridestart.topic}")
