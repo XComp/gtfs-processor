@@ -2,8 +2,6 @@ package com.mapohl.gtfsprocessor.taxiride.domain.taxiride;
 
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
-import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.TaxiRide;
-import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.TaxiRideMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ class TaxiRideMapperTest {
                 ""              // 17 - congestion_surcharge
         };
 
-        TaxiRide actualEntity = testInstance.map(String.join(",", values));
+        TaxiRide actualEntity = testInstance.map(String.join(",", values)).get(0);
         TaxiRide expectedEntity = TaxiRide.builder()
                 .pickupTimeStr(pickupTimeStr)
                 .dropOffTimeStr(dropOffTimeStr)

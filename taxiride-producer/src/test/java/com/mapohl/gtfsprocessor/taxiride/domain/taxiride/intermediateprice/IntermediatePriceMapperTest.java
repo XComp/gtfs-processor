@@ -48,7 +48,7 @@ class IntermediatePriceMapperTest {
         };
 
         String line = String.join(",", values);
-        IntermediatePrice actualEntity = testInstance.map(line);
+        IntermediatePrice actualEntity = testInstance.map(line).get(0);
         IntermediatePrice expectedEntity = IntermediatePrice.builder()
                 .entityId(line.hashCode())
                 .price(5.0)

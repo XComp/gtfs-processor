@@ -89,7 +89,9 @@ class SpeedTrackerMapperTest {
                 .borough("Queens")
                 .description("Link description")
                 .build();
-        SpeedTracker actualEntity = testInstance.map(String.join(",", values));
+        List<SpeedTracker> actualEntities = testInstance.map(String.join(",", values));
+        assertEquals(1, actualEntities.size());
+        SpeedTracker actualEntity = actualEntities.get(0);
 
         assertEquals(expectedEntity, actualEntity);
         assertEquals(expectedEntity.getEntityId(), creationTime.getEpochSecond());

@@ -44,8 +44,8 @@ class IteratorSourceTest {
     private static class TestEntityMapper implements EntityMapper<Integer, TestEntity> {
 
         @Override
-        public TestEntity map(Integer hour) {
-            return createEntity(hour);
+        public List<TestEntity> map(Integer hour) {
+            return Lists.newArrayList(createEntity(hour));
         }
     }
 

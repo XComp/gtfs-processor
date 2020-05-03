@@ -29,7 +29,7 @@ public class IteratorSource<I, E extends Entity<?>> extends BasicEntityQueue<I, 
     }
 
     private void fillBuffer() {
-        while (this.size() < this.bufferSize) {
+        while (this.cachedInputCount() < this.bufferSize) {
             if (this.inputIterator.hasNext()) {
                 this.add(this.inputIterator.next());
             } else {

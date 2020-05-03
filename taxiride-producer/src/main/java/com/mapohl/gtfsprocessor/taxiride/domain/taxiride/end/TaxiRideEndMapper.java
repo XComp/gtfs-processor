@@ -1,8 +1,10 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.end;
 
+import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.taxiride.domain.AbstractTaxiRideMapper;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 
+import java.util.List;
 import java.util.Map;
 
 public class TaxiRideEndMapper extends AbstractTaxiRideMapper<TaxiRideEnd> {
@@ -12,15 +14,15 @@ public class TaxiRideEndMapper extends AbstractTaxiRideMapper<TaxiRideEnd> {
     }
 
     @Override
-    public TaxiRideEnd map(String line) {
+    public List<TaxiRideEnd> map(String line) {
         String[] values = line.split(",");
-        return TaxiRideEnd.builder()
+        return Lists.newArrayList(TaxiRideEnd.builder()
                 .entityId(line.hashCode())
                 .dropOffTimeStr(values[2])
                 .distance(Double.parseDouble(values[4]))
                 .dropOffZone(this.getNYCTaxiZone(Integer.parseInt(values[8])))
                 .tollAmount(Double.parseDouble(values[14]))
                 .totalAmount(Double.parseDouble(values[16]))
-                .build();
+                .build());
     }
 }

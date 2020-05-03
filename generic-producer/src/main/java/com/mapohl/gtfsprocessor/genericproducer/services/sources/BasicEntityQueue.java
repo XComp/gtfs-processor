@@ -2,24 +2,44 @@ package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 @Slf4j
-public class BasicEntityQueue<I, E extends Entity<?>> extends AbstractEntitySource<I, E> implements EntityQueue<I, E> {
+public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, E> {
 
-    private final Queue<I> entityQueue;
-
+    private final EntityMapper<I, E> entityMapper;
+    private final Queue<I> inputQueue;
+    private final Queue<E> entityQueue;
+    private final EntityQueue<I, ? extends Entity<?>>[] downstreamEntityQueues;
     private boolean hasData = true;
 
     public BasicEntityQueue(EntityMapper<I, E> entityMapper, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
-        super(entityMapper, downstreamEntityQueues);
+        this.entityMapper = entityMapper;
 
-        this.entityQueue = new PriorityBlockingQueue<I>(100, entityMapper.createComparator());
+        this.inputQueue = new PriorityBlockingQueue<>(100, new InputComparator(entityMapper));
+        this.entityQueue = new PriorityBlockingQueue<>();
+
+        this.downstreamEntityQueues = downstreamEntityQueues;
+    }
+
+    private void propagateInputToDownstreamQueues(I input) {
+        for (EntityQueue<I, ?> downstreamEntityQueue : this.downstreamEntityQueues) {
+            downstreamEntityQueue.add(input);
+        }
+    }
+
+    private void propagateEndOfDataDownstream() {
+        for (EntityQueue<I, ?> downstreamEntityQueue : this.downstreamEntityQueues) {
+            downstreamEntityQueue.endOfDataReached();
+        }
     }
 
     @Override
@@ -35,53 +55,86 @@ public class BasicEntityQueue<I, E extends Entity<?>> extends AbstractEntitySour
                 this.propagateEndOfDataDownstream();
             }
         } else {
-            this.entityQueue.offer(input);
+            this.inputQueue.add(input);
         }
-    }
-
-    private E peek() {
-        return this.mapOrNull(this.entityQueue.peek());
-    }
-
-    private E poll() {
-        I input = this.entityQueue.poll();
-        this.propagateInputToDownstreamQueues(input);
-        if (!this.hasNext()) {
-            this.propagateEndOfDataDownstream();
-        }
-
-        return this.mapOrNull(input);
     }
 
     @Override
     public Instant peekNextEventTime() {
-        return this.isEmpty() ? null : this.peek().getEventTime();
+        while (true) {
+            if (!this.entityQueue.isEmpty()) {
+                return this.entityQueue.peek().getEventTime();
+            }
+
+            if (this.inputQueue.isEmpty()) {
+                return null;
+            }
+
+            List<E> entities = this.entityMapper.map(this.inputQueue.peek());
+
+            if (!entities.isEmpty()) {
+                return entities.get(0).getEventTime();
+            }
+
+            this.inputQueue.poll();
+        }
     }
 
     @Override
     public boolean hasNext() {
-        return !this.isEmpty() || this.hasData;
+        return this.hasData || !this.isEmpty();
     }
 
     @Override
     public boolean isEmpty() {
-        return this.entityQueue.isEmpty();
+        return this.peekNextEventTime() == null;
     }
 
     @Override
     public E next() {
-        if (!this.hasNext()) {
-            throw new NoSuchElementException();
-        }
+        while (true) {
+            if (!this.entityQueue.isEmpty()) {
+                return this.entityQueue.poll();
+            }
 
-        if (this.isEmpty()) {
-            log.error("No entities are buffered.");
-        }
+            if (this.inputQueue.isEmpty()) {
+                if (this.hasData) {
+                    return null;
+                }
 
-        return this.poll();
+                this.propagateEndOfDataDownstream();
+                throw new NoSuchElementException();
+            }
+
+            I input = this.inputQueue.poll();
+            this.propagateInputToDownstreamQueues(input);
+            this.entityQueue.addAll(this.entityMapper.map(input));
+        }
     }
 
-    public int size() {
-        return this.entityQueue.size();
+    protected int cachedInputCount() {
+        return this.inputQueue.size();
+    }
+
+    @RequiredArgsConstructor
+    private class InputComparator implements Comparator<I> {
+
+        private final EntityMapper<I, E> entityMapper;
+
+        @Override
+        public int compare(I input1, I input2) {
+            List<E> entities1 = this.entityMapper.map(input1);
+            List<E> entities2 = this.entityMapper.map(input2);
+
+            if (entities1.isEmpty() && entities1.isEmpty()) {
+                return 0;
+            } else if (entities1.isEmpty()) {
+                return 1;
+            } else if (entities2.isEmpty()) {
+                return -1;
+            }
+
+            return entities1.get(0).compareTo(entities2.get(0));
+        }
     }
 }

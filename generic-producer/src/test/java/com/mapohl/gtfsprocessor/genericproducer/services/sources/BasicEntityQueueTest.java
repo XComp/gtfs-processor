@@ -5,6 +5,8 @@ import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.NoSuchElementException;
+
 import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +43,7 @@ class BasicEntityQueueTest {
         testInstance.endOfDataReached();
 
         assertFalse(testInstance.hasNext());
+        assertThrows(NoSuchElementException.class, () -> testInstance.next());
         assertThrows(IllegalStateException.class, () -> testInstance.add(createEntity(0)));
     }
 

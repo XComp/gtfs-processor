@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.taxiride.domain.utils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;

@@ -48,7 +48,7 @@ public class SpeedTrackerMapper implements EntityMapper<String, SpeedTracker> {
     }
 
     @Override
-    public SpeedTracker map(String line) {
+    public List<SpeedTracker> map(String line) {
         int firstQuote = line.indexOf('"');
         int secondQuote = line.indexOf('"', firstQuote + 1);
 
@@ -56,7 +56,7 @@ public class SpeedTrackerMapper implements EntityMapper<String, SpeedTracker> {
         String[] precedingValues = line.substring(0, firstQuote - 1).split(",");
         String[] succeedingValues = line.substring(secondQuote + 1).split(",");
 
-        return SpeedTracker.builder()
+        return Lists.newArrayList(SpeedTracker.builder()
                 .speed(Double.parseDouble(precedingValues[1]))
                 .travelTimeInSeconds(Integer.parseInt(precedingValues[2]))
                 .creationTimeStr(precedingValues[4])
@@ -64,6 +64,6 @@ public class SpeedTrackerMapper implements EntityMapper<String, SpeedTracker> {
                 .linkPoints(linkPoints)
                 .borough(succeedingValues[5])
                 .description(succeedingValues[6])
-                .build();
+                .build());
     }
 }

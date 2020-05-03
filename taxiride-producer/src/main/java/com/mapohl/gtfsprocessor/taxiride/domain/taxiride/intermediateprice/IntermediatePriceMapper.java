@@ -1,5 +1,6 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.intermediateprice;
 
+import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class IntermediatePriceMapper implements EntityMapper<String, IntermediatePrice> {
@@ -15,7 +17,7 @@ public class IntermediatePriceMapper implements EntityMapper<String, Intermediat
     private final int intermediateStepCount = 1;
 
     @Override
-    public IntermediatePrice map(String line) {
+    public List<IntermediatePrice> map(String line) {
         String[] values = line.split(",");
 
         double totalAmount = Double.parseDouble(values[16]);
@@ -26,11 +28,11 @@ public class IntermediatePriceMapper implements EntityMapper<String, Intermediat
         Duration stepLength = Duration.between(pickupTime, dropOffTime).dividedBy(this.intermediateStepCount + 1);
 
         if (stepLength.getSeconds() < 1) {
-            return IntermediatePrice.builder()
+            return Lists.newArrayList(IntermediatePrice.builder()
                     .entityId(line.hashCode())
                     .eventTime(dropOffTime)
                     .price(totalAmount)
-                    .build();
+                    .build());
         }
 
         double intermediateAmount = 0.0;
@@ -39,11 +41,11 @@ public class IntermediatePriceMapper implements EntityMapper<String, Intermediat
             intermediateAmount += partialAmount;
             intermediateTimePeriod = intermediateTimePeriod.next();
 
-            return IntermediatePrice.builder()
+            return Lists.newArrayList(IntermediatePrice.builder()
                     .entityId(line.hashCode())
                     .eventTime(intermediateTimePeriod.getInclusiveStartTime())
                     .price(intermediateAmount)
-                    .build();
+                    .build());
         }
 
         // this return is never reached for now since the intermediateStepCount is fixed - this needs to be refactored

@@ -1,9 +1,11 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride;
 
+import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.taxiride.domain.AbstractTaxiRideMapper;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.List;
 import java.util.Map;
 
 public class TaxiRideMapper extends AbstractTaxiRideMapper<TaxiRide> {
@@ -31,9 +33,9 @@ public class TaxiRideMapper extends AbstractTaxiRideMapper<TaxiRide> {
     // 16 - total_amount
     // 17 - congestion_surcharge
     @Override
-    public TaxiRide map(String line) {
+    public List<TaxiRide> map(String line) {
         String[] values = line.split(",");
-        return TaxiRide.builder()
+        return Lists.newArrayList(TaxiRide.builder()
                 .entityId(RandomUtils.nextLong())
                 .pickupTimeStr(values[1])
                 .dropOffTimeStr(values[2])
@@ -44,6 +46,6 @@ public class TaxiRideMapper extends AbstractTaxiRideMapper<TaxiRide> {
                 .paymentTypeId(Integer.parseInt(values[9]))
                 .tollAmount(Double.parseDouble(values[14]))
                 .totalAmount(Double.parseDouble(values[16]))
-                .build();
+                .build());
     }
 }
