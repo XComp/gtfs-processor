@@ -19,6 +19,14 @@ public class TestUtils {
         return INSTANT_BUILDER.hour(hour).minute(minute).build();
     }
 
+    public static String createInstantStr(int hour) {
+        return createInstantStr(hour, 0);
+    }
+
+    public static String createInstantStr(int hour, int minute) {
+        return INSTANT_BUILDER.hour(hour).minute(minute).toString();
+    }
+
     public static TestEntity createEntity(int hour) {
         return createEntity(hour, 0);
     }

@@ -3,8 +3,28 @@ package com.mapohl.gtfsprocessor.test.utils;
 import com.google.common.base.Preconditions;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 
 public class InstantBuilder {
+
+    private static final ZoneOffset DEFAULT_TIME_ZONE = ZoneOffset.UTC;
+
+    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .append(ISO_LOCAL_DATE)
+            .appendLiteral(' ')
+            .append(ISO_LOCAL_TIME)
+            .toFormatter()
+            .withZone(DEFAULT_TIME_ZONE);
+
+    private final DateTimeFormatter dateTimeFormatter;
 
     private final int defaultYear;
     private final int defaultMonth;
@@ -25,6 +45,12 @@ public class InstantBuilder {
     }
 
     public InstantBuilder(int defaultYear, int defaultMonth, int defaultDay, int defaultHour, int defaultMinute, int defaultSecond) {
+        this(DEFAULT_DATE_TIME_FORMATTER, defaultYear, defaultMonth, defaultDay, defaultHour, defaultMinute, defaultSecond);
+    }
+
+    public InstantBuilder(DateTimeFormatter dateTimeFormatter, int defaultYear, int defaultMonth, int defaultDay, int defaultHour, int defaultMinute, int defaultSecond) {
+        this.dateTimeFormatter = dateTimeFormatter;
+
         this.defaultYear = defaultYear;
         this.defaultMonth = defaultMonth;
         this.defaultDay = defaultDay;
@@ -45,10 +71,14 @@ public class InstantBuilder {
     }
 
     public Instant build() {
-        Instant instant = Instant.parse(String.format("%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour, minute, second));
+        Instant instant = LocalDateTime.of(year, month, day, hour, minute, second).toInstant(DEFAULT_TIME_ZONE);
         this.initialize();
 
         return instant;
+    }
+
+    public String toString() {
+        return dateTimeFormatter.format(build());
     }
 
     public InstantBuilder year(int year) {
