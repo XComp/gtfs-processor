@@ -16,7 +16,11 @@ public class TestUtils {
     }
 
     public static Instant createInstant(int hour, int minute) {
-        return INSTANT_BUILDER.hour(hour).minute(minute).build();
+        return createInstant(hour, minute, 0);
+    }
+
+    public static Instant createInstant(int hour, int minute, int second) {
+        return INSTANT_BUILDER.hour(hour).minute(minute).second(second).build();
     }
 
     public static String createInstantStr(int hour) {
@@ -24,7 +28,11 @@ public class TestUtils {
     }
 
     public static String createInstantStr(int hour, int minute) {
-        return INSTANT_BUILDER.hour(hour).minute(minute).toString();
+        return createInstantStr(hour, minute, 0);
+    }
+
+    public static String createInstantStr(int hour, int minute, int second) {
+        return INSTANT_BUILDER.hour(hour).minute(minute).second(second).toString();
     }
 
     public static TestEntity createEntity(int hour) {
