@@ -13,8 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IntermediatePriceMapper implements EntityMapper<String, IntermediatePrice> {
 
-    // TODO: we have to make the EntityMapper interface more general
-    private final int intermediateStepCount = 1;
+    private final int intermediateStepCount;
 
     @Override
     public List<IntermediatePrice> map(String line) {
@@ -28,27 +27,23 @@ public class IntermediatePriceMapper implements EntityMapper<String, Intermediat
         Duration stepLength = Duration.between(pickupTime, dropOffTime).dividedBy(this.intermediateStepCount + 1);
 
         if (stepLength.getSeconds() < 1) {
-            return Lists.newArrayList(IntermediatePrice.builder()
-                    .entityId(line.hashCode())
-                    .eventTime(dropOffTime)
-                    .price(totalAmount)
-                    .build());
+            return Lists.newArrayList();
         }
 
+        List<IntermediatePrice> entities = Lists.newArrayList();
         double intermediateAmount = 0.0;
         TimePeriod intermediateTimePeriod = new TimePeriod(pickupTime, stepLength);
         for (int i = 0; i < this.intermediateStepCount; i++) {
             intermediateAmount += partialAmount;
             intermediateTimePeriod = intermediateTimePeriod.next();
 
-            return Lists.newArrayList(IntermediatePrice.builder()
+            entities.add(IntermediatePrice.builder()
                     .entityId(line.hashCode())
                     .eventTime(intermediateTimePeriod.getInclusiveStartTime())
                     .price(intermediateAmount)
                     .build());
         }
 
-        // this return is never reached for now since the intermediateStepCount is fixed - this needs to be refactored
-        return null;
+        return entities;
     }
 }

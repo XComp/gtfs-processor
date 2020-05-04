@@ -32,7 +32,7 @@ public class IntermediatePriceConfiguration {
 
     @Bean
     public EntityMapper<String, IntermediatePrice> intermediatePriceEntityMapper() {
-        return new IntermediatePriceMapper();
+        return new IntermediatePriceMapper(5);
     }
 
     @Bean
