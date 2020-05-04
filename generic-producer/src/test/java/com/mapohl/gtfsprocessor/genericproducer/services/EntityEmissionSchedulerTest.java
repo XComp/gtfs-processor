@@ -2,10 +2,10 @@ package com.mapohl.gtfsprocessor.genericproducer.services;
 
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.BasicEntityQueue;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,7 +14,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.time.Duration;
 import java.util.List;
 
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.*;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.*;
 import static org.mockito.Mockito.*;
 
 class EntityEmissionSchedulerTest {

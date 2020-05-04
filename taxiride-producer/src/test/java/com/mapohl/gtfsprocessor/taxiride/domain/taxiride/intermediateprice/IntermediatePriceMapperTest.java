@@ -6,8 +6,7 @@ import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createInstant;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IntermediatePriceMapperTest {
@@ -19,7 +18,7 @@ class IntermediatePriceMapperTest {
         System.out.println(new ObjectMapper().writeValueAsString(IntermediatePrice.builder()
                 .price(1.0)
                 .entityId(1)
-                .eventTime(Instant.now())
+                .eventTime(createInstant(0))
                 .build()));
     }
 

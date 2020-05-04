@@ -2,7 +2,7 @@ package com.mapohl.gtfsprocessor.genericproducer;
 
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.INSTANT_BUILDER;
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.INSTANT_BUILDER;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createEntity;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 

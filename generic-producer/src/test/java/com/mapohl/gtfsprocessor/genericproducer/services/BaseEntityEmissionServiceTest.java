@@ -1,10 +1,10 @@
 package com.mapohl.gtfsprocessor.genericproducer.services;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.*;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

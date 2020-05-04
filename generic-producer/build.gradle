@@ -1,3 +1,11 @@
+plugins {
+    id 'java-test-fixtures'
+}
+
+configurations {
+    testFixturesCompileOnly.extendsFrom testFixturesAnnotationProcessor
+}
+
 jar.archiveBaseName = 'generic-producer'
 
 dependencies {
@@ -8,6 +16,9 @@ dependencies {
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
+    testFixturesAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    testFixturesImplementation group: 'com.google.guava', name: 'guava'
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
 

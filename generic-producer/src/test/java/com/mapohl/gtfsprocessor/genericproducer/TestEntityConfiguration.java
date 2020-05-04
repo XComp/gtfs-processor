@@ -2,8 +2,8 @@ package com.mapohl.gtfsprocessor.genericproducer;
 
 import com.google.common.collect.Maps;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntityMapper;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;

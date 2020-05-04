@@ -1,6 +1,7 @@
-package com.mapohl.gtfsprocessor.genericproducer.domain;
+package com.mapohl.gtfsprocessor.test.domain;
 
 import com.google.common.collect.Lists;
+import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 
 import java.util.List;
 

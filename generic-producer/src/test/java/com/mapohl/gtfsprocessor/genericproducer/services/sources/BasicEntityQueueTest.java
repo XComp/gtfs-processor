@@ -1,13 +1,13 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BasicEntityQueueTest {

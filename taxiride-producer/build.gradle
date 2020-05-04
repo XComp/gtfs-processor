@@ -11,6 +11,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation group: 'info.picocli', name: 'picocli'
 
+    testImplementation testFixtures(project(':generic-producer'))
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

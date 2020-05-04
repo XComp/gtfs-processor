@@ -2,14 +2,14 @@ package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.mapohl.gtfsprocessor.genericproducer.testutils.TestUtils.createEntity;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IteratorSourceTest {

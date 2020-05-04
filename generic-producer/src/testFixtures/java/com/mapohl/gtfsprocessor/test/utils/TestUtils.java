@@ -1,7 +1,7 @@
-package com.mapohl.gtfsprocessor.genericproducer.testutils;
+package com.mapohl.gtfsprocessor.test.utils;
 
-import com.mapohl.gtfsprocessor.genericproducer.domain.TestEntity;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
+import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 
 import java.time.Instant;
 

@@ -1,5 +1,6 @@
-package com.mapohl.gtfsprocessor.genericproducer.domain;
+package com.mapohl.gtfsprocessor.test.domain;
 
+import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
