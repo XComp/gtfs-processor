@@ -52,7 +52,7 @@ public class TaxiRideComponentTest {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    private static void assertItermediatePriceRecordsOfRow(Iterator<ConsumerRecord<Integer, IntermediatePrice>> it, double priceIncrease, Instant... eventTimes) {
+    private static void assertIntermediatePriceRecordsOfRow(Iterator<ConsumerRecord<Integer, IntermediatePrice>> it, double priceIncrease, Instant... eventTimes) {
         double expectedPrice = 0.0;
         for (Instant eventTime : eventTimes) {
             expectedPrice += priceIncrease;
@@ -122,7 +122,7 @@ public class TaxiRideComponentTest {
         Iterator<ConsumerRecord<Integer, IntermediatePrice>> actualIterator = actualConsumerRecords.records(this.intermediateTopic).iterator();
 
         // first row
-        assertItermediatePriceRecordsOfRow(actualIterator, 2.0,
+        assertIntermediatePriceRecordsOfRow(actualIterator, 2.0,
                 INSTANT_BUILDER.minute(5).second(10).build(),
                 INSTANT_BUILDER.minute(5).second(20).build(),
                 INSTANT_BUILDER.minute(5).second(30).build(),
@@ -130,12 +130,12 @@ public class TaxiRideComponentTest {
                 INSTANT_BUILDER.minute(5).second(50).build());
 
         // second row
-        assertItermediatePriceRecordsOfRow(actualIterator, 0.0,
+        assertIntermediatePriceRecordsOfRow(actualIterator, 0.0,
                 INSTANT_BUILDER.minute(5).second(20).build(),
                 INSTANT_BUILDER.minute(5).second(30).build());
 
         // third row
-        assertItermediatePriceRecordsOfRow(actualIterator, 10.0,
+        assertIntermediatePriceRecordsOfRow(actualIterator, 10.0,
                 INSTANT_BUILDER.minute(6).second(10).build(),
                 INSTANT_BUILDER.minute(6).second(20).build(),
                 INSTANT_BUILDER.minute(6).second(30).build(),
