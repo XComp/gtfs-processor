@@ -51,7 +51,7 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
         if (input == null) {
             this.hasData = false;
 
-            if (!this.hasNext()) {
+            if (this.inputQueue.isEmpty()) {
                 this.propagateEndOfDataDownstream();
             }
         } else {
@@ -112,6 +112,10 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
 
             I input = this.inputQueue.poll();
             this.propagateInputToDownstreamQueues(input);
+            if (this.inputQueue.isEmpty() && !this.upstreamHasNext()) {
+                this.propagateEndOfDataDownstream();
+            }
+
             this.entityQueue.addAll(this.entityMapper.map(input));
         }
     }

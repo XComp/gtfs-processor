@@ -29,10 +29,10 @@ public class IteratorSource<I, E extends Entity<?>> extends BasicEntityQueue<I, 
     }
 
     private void fillBuffer() {
-        while (this.cachedInputCount() < this.bufferSize) {
-            if (this.inputIterator.hasNext()) {
-                this.add(this.inputIterator.next());
-            } else {
+        while (this.cachedInputCount() < this.bufferSize && this.inputIterator.hasNext()) {
+            this.add(this.inputIterator.next());
+
+            if (!this.inputIterator.hasNext()) {
                 this.endOfDataReached();
                 return;
             }
