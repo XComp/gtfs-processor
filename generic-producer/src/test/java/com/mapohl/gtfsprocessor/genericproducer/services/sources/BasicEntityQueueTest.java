@@ -1,7 +1,6 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BasicEntityQueueTest {
 
-    private BasicEntityQueue<TestEntity, TestEntity> testInstance;
+    private BasicEntityQueue<String, TestEntity> testInstance;
 
     @BeforeEach
     public void initializeTestInstance() {
-        this.testInstance = new BasicEntityQueue<>(new IdentityMapper<>());
+        this.testInstance = new BasicEntityQueue<>(new TestEntityMapper());
     }
 
     @Test
@@ -30,9 +29,9 @@ class BasicEntityQueueTest {
 
     @Test
     public void testOneEntity() {
-        TestEntity e = createEntity(0);
-        testInstance.add(e);
+        testInstance.add("0");
 
+        TestEntity e = createEntity(0);
         assertTrue(testInstance.hasNext());
         assertEquals(e.getEventTime(), testInstance.peekNextEventTime());
         assertEquals(e, testInstance.next());
@@ -46,25 +45,22 @@ class BasicEntityQueueTest {
 
         assertFalse(testInstance.hasNext());
         assertThrows(NoSuchElementException.class, () -> testInstance.next());
-        assertThrows(IllegalStateException.class, () -> testInstance.add(createEntity(0)));
+        assertThrows(IllegalStateException.class, () -> testInstance.add("0"));
     }
 
     @Test
     public void testDifferentOrder() {
-        TestEntity e0 = createEntity(0);
-        TestEntity e1 = createEntity(1);
-
         // added in reverse order
-        testInstance.add(e1);
-        testInstance.add(e0);
+        testInstance.add("1");
+        testInstance.add("0");
 
         // order gets fixed
-        assertEquals(e0, testInstance.next());
-        assertEquals(e1, testInstance.next());
+        assertEquals(createEntity(0), testInstance.next());
+        assertEquals(createEntity(1), testInstance.next());
     }
 
     @Test
-    public void testDownstreamPropagation() {
+    public void testInfiniteDataStreamDownstreamPropagation() {
         EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
         BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(entityMapper);
         BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(entityMapper, downstreamTestInstance);
@@ -91,6 +87,7 @@ class BasicEntityQueueTest {
         assertNull(upstreamTestInstance.next());
         assertNull(downstreamTestInstance.next());
 
+        // end-of-data is reached after all data was processed
         upstreamTestInstance.endOfDataReached();
 
         assertFalse(upstreamTestInstance.hasNext());
@@ -98,7 +95,7 @@ class BasicEntityQueueTest {
     }
 
     @Test
-    public void testDownstreamPropagation2() {
+    public void testLimitedDataStreamDownstreamPropagation() {
         EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
         BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(entityMapper);
         BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(entityMapper, downstreamTestInstance);
@@ -109,6 +106,7 @@ class BasicEntityQueueTest {
         upstreamTestInstance.add("0");
         upstreamTestInstance.add("12");
 
+        // end-of-data is reached before data is processed
         upstreamTestInstance.endOfDataReached();
 
         assertTrue(upstreamTestInstance.hasNext());

@@ -2,7 +2,6 @@ package com.mapohl.gtfsprocessor.genericproducer.services;
 
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
-import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.BasicEntityQueue;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
@@ -14,7 +13,6 @@ import org.mockito.Mockito;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Duration;
-import java.util.List;
 
 import static com.mapohl.gtfsprocessor.test.utils.TestUtils.*;
 import static org.mockito.Mockito.*;

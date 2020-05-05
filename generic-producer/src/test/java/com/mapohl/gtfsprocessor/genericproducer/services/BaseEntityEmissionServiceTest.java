@@ -1,9 +1,9 @@
 package com.mapohl.gtfsprocessor.genericproducer.services;
 
-import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
+import com.mapohl.gtfsprocessor.test.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
