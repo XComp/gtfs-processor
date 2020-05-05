@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.mapohl.gtfsprocessor.test.utils.TestUtils.INSTANT_BUILDER;
 import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createEntity;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;

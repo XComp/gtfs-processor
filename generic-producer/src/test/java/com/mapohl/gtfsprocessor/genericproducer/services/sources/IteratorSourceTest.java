@@ -3,7 +3,6 @@ package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
