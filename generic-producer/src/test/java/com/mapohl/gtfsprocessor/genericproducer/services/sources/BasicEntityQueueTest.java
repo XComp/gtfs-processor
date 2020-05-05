@@ -1,7 +1,9 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
+import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.domain.IdentityMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,25 +65,72 @@ class BasicEntityQueueTest {
 
     @Test
     public void testDownstreamPropagation() {
-        BasicEntityQueue<Integer, TestEntity> downstreamTestInstance = new BasicEntityQueue(new IdentityMapper());
-        BasicEntityQueue<TestEntity, TestEntity> upstreamTestInstance = new BasicEntityQueue(new IdentityMapper(), downstreamTestInstance);
+        EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
+        BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(entityMapper);
+        BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(entityMapper, downstreamTestInstance);
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        upstreamTestInstance.add("0");
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
         TestEntity e0 = createEntity(0);
-        upstreamTestInstance.add(e0);
+        assertEquals(e0, upstreamTestInstance.next());
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(e0, upstreamTestInstance.next());
         assertEquals(e0, downstreamTestInstance.next());
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
+        assertNull(upstreamTestInstance.next());
+        assertNull(downstreamTestInstance.next());
+
         upstreamTestInstance.endOfDataReached();
+
+        assertFalse(upstreamTestInstance.hasNext());
+        assertFalse(downstreamTestInstance.hasNext());
+    }
+
+    @Test
+    public void testDownstreamPropagation2() {
+        EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
+        BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(entityMapper);
+        BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(entityMapper, downstreamTestInstance);
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        upstreamTestInstance.add("0");
+        upstreamTestInstance.add("12");
+
+        upstreamTestInstance.endOfDataReached();
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(0), upstreamTestInstance.next());
+        assertEquals(createEntity(0), downstreamTestInstance.next());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(1), upstreamTestInstance.next());
+        assertEquals(createEntity(1), downstreamTestInstance.next());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(2), upstreamTestInstance.next());
+        assertEquals(createEntity(2), downstreamTestInstance.next());
 
         assertFalse(upstreamTestInstance.hasNext());
         assertFalse(downstreamTestInstance.hasNext());

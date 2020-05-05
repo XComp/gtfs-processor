@@ -1,8 +1,8 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.google.common.collect.Lists;
-import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,39 +14,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IteratorSourceTest {
 
-    private static List<Integer> input = Lists.newArrayList();
-    private static List<TestEntity> expectedOutput = Lists.newArrayList();
-    private static int entityLimit = 4;
-    private IteratorSource<TestEntity, TestEntity> testInstance;
-
-    @BeforeAll
-    public static void setupData() {
-        for (int i = 0; i < entityLimit; i++) {
-            input.add(i);
-            expectedOutput.add(createEntity(i));
-        }
-    }
-
     @Test
     public void testIteration() {
-        this.testInstance = new IteratorSource(input.iterator(), new TestEntityMapper());
+        List<String> input = Lists.newArrayList("0", "12");
+        IteratorSource<String, TestEntity> testInstance = new IteratorSource(input.iterator(), 1, new TestEntityMapper());
 
-        for (int i = 0; i < entityLimit; i++) {
-            assertEquals(expectedOutput.get(i).getEventTime(), testInstance.peekNextEventTime());
-            assertTrue(testInstance.hasNext());
-            assertEquals(expectedOutput.get(i), testInstance.next());
-        }
+        assertTrue(testInstance.hasNext());
+        assertTrue(testInstance.upstreamHasNext());
+        assertEquals(createEntity(0), testInstance.next());
 
+        assertTrue(testInstance.hasNext());
+        assertFalse(testInstance.upstreamHasNext());
+        assertEquals(createEntity(1), testInstance.next());
+
+        assertTrue(testInstance.hasNext());
+        assertFalse(testInstance.upstreamHasNext());
+        assertEquals(createEntity(2), testInstance.next());
+
+        assertFalse(testInstance.upstreamHasNext());
         assertFalse(testInstance.hasNext());
         assertThrows(NoSuchElementException.class, () -> testInstance.next());
-    }
-
-    private static class TestEntityMapper implements EntityMapper<Integer, TestEntity> {
-
-        @Override
-        public List<TestEntity> map(Integer hour) {
-            return Lists.newArrayList(createEntity(hour));
-        }
     }
 
 }

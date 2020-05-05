@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.genericproducer;
 import com.google.common.collect.Lists;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
+import com.mapohl.gtfsprocessor.test.utils.InstantBuilder;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -73,19 +74,18 @@ public class CsvEntityProducerTest {
     @Test
     public void testEmittingDataFromCsv() {
         List<TestEntity> expectedEntities = Lists.newArrayList(
-                // createEntity(0, 0),
-                // createEntity(0, 30),
-                createEntity(1, 0),
-                createEntity(1, 30),
-                createEntity(2, 0),
-                createEntity(2, 30),
-                createEntity(3, 0),
-                createEntity(3, 30)
+                // createEntity(0),
+                // createEntity(1),
+                createEntity(2),
+                createEntity(3),
+                createEntity(4),
+                createEntity(5),
+                createEntity(6),
+                createEntity(7)
         );
 
-        String startTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC).format(INSTANT_BUILDER.hour(1).build());
+        String startTime = new InstantBuilder(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC)).hour(2).toString();
         this.testInstance.run("--csv", "src/test/resources/test.csv",
-                "--header-lines", "1",
                 "--start-time", startTime,
                 "--time-slot-length", "90",
                 "--time-slot-time-unit", "MINUTES",
