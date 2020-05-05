@@ -80,9 +80,13 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
         }
     }
 
+    protected boolean upstreamHasNext() {
+        return this.hasData;
+    }
+
     @Override
     public boolean hasNext() {
-        return this.hasData || !this.isEmpty();
+        return this.upstreamHasNext() || !this.isEmpty();
     }
 
     @Override
@@ -98,7 +102,7 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
             }
 
             if (this.inputQueue.isEmpty()) {
-                if (this.hasData) {
+                if (this.upstreamHasNext()) {
                     return null;
                 }
 
