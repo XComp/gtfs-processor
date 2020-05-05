@@ -50,7 +50,7 @@ class IntermediatePriceMapperTest {
         String inputLine = createTestLine(0, 0, 0, 0, 10, 0, 10.0);
         ObjectMapper objMapper = JacksonUtils.enhancedObjectMapper();
 
-        String json  = objMapper.writeValueAsString(testInstance.map(inputLine));
+        String json = objMapper.writeValueAsString(testInstance.map(inputLine));
         objMapper.readValue(json, List.class);
     }
 

@@ -1,6 +1,5 @@
 package com.mapohl.gtfsprocessor.taxiride;
 
-import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.taxiride.configuration.TaxiRideConfiguration;
 import com.mapohl.gtfsprocessor.taxiride.domain.NYCTaxiZone;
 import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.TaxiRide;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -44,12 +42,6 @@ class TaxiRideProducerTest {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Autowired
-    private KafkaTemplate<Long, TaxiRide> kafkaTemplate;
-
-    @Autowired
-    private EntityMapper<String, TaxiRide> entityMapper;
-
-    @Autowired
     private Map<Integer, NYCTaxiZone> nycTaxiZoneIndex;
 
     private Consumer<Long, TaxiRide> consumer;
@@ -71,37 +63,37 @@ class TaxiRideProducerTest {
     public void testEmittingDataFromCsv() {
         List<TaxiRide> expectedEntities = Lists.newArrayList(
                 TaxiRide.builder()
-                        .pickupTimeStr("2009-01-01 00:05:07")
-                        .dropOffTimeStr("2009-01-01 00:05:32")
+                        .pickupTimeStr("2009-01-01 00:05:00")
+                        .dropOffTimeStr("2009-01-01 00:06:00")
                         .passengerCount(1)
-                        .distance(0.0)
+                        .distance(1.0)
                         .pickupZone(this.nycTaxiZoneIndex.get(193))
                         .dropOffZone(this.nycTaxiZoneIndex.get(193))
                         .paymentTypeId(2)
                         .tollAmount(0.0)
-                        .totalAmount(3.8)
+                        .totalAmount(12.0)
                         .build(),
                 TaxiRide.builder()
-                        .pickupTimeStr("2009-01-01 00:05:12")
-                        .dropOffTimeStr("2009-01-01 00:05:59")
+                        .pickupTimeStr("2009-01-01 00:05:10")
+                        .dropOffTimeStr("2009-01-01 00:05:40")
                         .passengerCount(1)
-                        .distance(0.0)
-                        .pickupZone(this.nycTaxiZoneIndex.get(264))
+                        .distance(2.0)
+                        .pickupZone(this.nycTaxiZoneIndex.get(261))
                         .dropOffZone(this.nycTaxiZoneIndex.get(193))
                         .paymentTypeId(2)
                         .tollAmount(0.0)
                         .totalAmount(0.0)
                         .build(),
                 TaxiRide.builder()
-                        .pickupTimeStr("2009-01-01 00:06:01")
-                        .dropOffTimeStr("2009-01-01 00:06:55")
+                        .pickupTimeStr("2009-01-01 00:06:00")
+                        .dropOffTimeStr("2009-01-01 00:07:00")
                         .passengerCount(6)
-                        .distance(0.0)
-                        .pickupZone(this.nycTaxiZoneIndex.get(264))
+                        .distance(3.0)
+                        .pickupZone(this.nycTaxiZoneIndex.get(261))
                         .dropOffZone(this.nycTaxiZoneIndex.get(193))
                         .paymentTypeId(2)
                         .tollAmount(0.0)
-                        .totalAmount(0.0)
+                        .totalAmount(60.0)
                         .build()
         );
 

@@ -1,10 +1,21 @@
+spring.main.allow-bean-definition-overriding: true
+
 kafka:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
   taxiride:
     topic: taxirides-test
     partition-count: 1
     replication-factor: 1
+  taxiridestart:
+    topic: taxiridestarts-test
+    partition-count: 1
+    replication-factor: 1
   intermediateprice:
-    topic: intermediateprices
+    topic: intermediateprices-test
+    partition-count: 1
+    replication-factor: 1
+    event-step-length-in-secs: 10
+  taxirideend:
+    topic: taxirideends-test
     partition-count: 1
     replication-factor: 1

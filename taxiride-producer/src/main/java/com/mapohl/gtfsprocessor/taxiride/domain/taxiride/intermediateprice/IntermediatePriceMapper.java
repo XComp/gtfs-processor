@@ -1,29 +1,23 @@
 package com.mapohl.gtfsprocessor.taxiride.domain.taxiride.intermediateprice;
 
 import com.google.common.collect.Lists;
-import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
-import com.mapohl.gtfsprocessor.taxiride.domain.utils.NYCTaxiRideUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
-public class IntermediatePriceMapper implements EntityMapper<String, IntermediatePrice> {
+public class IntermediatePriceMapper extends AbstractIntermediatePriceMapper {
 
     private final int intermediateStepCount;
 
     @Override
-    public List<IntermediatePrice> map(String line) {
-        String[] values = line.split(",");
-
-        double totalAmount = Double.parseDouble(values[16]);
+    protected List<IntermediatePrice> createEvents(int entityId, Instant pickupTime, Instant dropOffTime, double totalAmount) {
         double partialAmount = totalAmount / (this.intermediateStepCount + 1);
-
-        Instant pickupTime = NYCTaxiRideUtils.parse(values[1]);
-        Instant dropOffTime = NYCTaxiRideUtils.parse(values[2]);
         Duration stepLength = Duration.between(pickupTime, dropOffTime).dividedBy(this.intermediateStepCount + 1);
 
         if (stepLength.getSeconds() < 1) {
@@ -38,7 +32,7 @@ public class IntermediatePriceMapper implements EntityMapper<String, Intermediat
             intermediateTimePeriod = intermediateTimePeriod.next();
 
             entities.add(IntermediatePrice.builder()
-                    .entityId(line.hashCode())
+                    .entityId(entityId)
                     .eventTime(intermediateTimePeriod.getInclusiveStartTime())
                     .price(intermediateAmount)
                     .build());

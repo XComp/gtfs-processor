@@ -4,7 +4,7 @@ import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
 import com.mapohl.gtfsprocessor.genericproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.BasicEntityQueue;
 import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.intermediateprice.IntermediatePrice;
-import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.intermediateprice.IntermediatePriceMapper;
+import com.mapohl.gtfsprocessor.taxiride.domain.taxiride.intermediateprice.PerSecondsIntermediatePriceMapper;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +14,9 @@ import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 public class IntermediatePriceConfiguration {
+
+    @Value("${kafka.intermediateprice.event-step-length-in-secs:60}")
+    private int eventStepLengthInSecs;
 
     @Value("${kafka.intermediateprice.topic}")
     private String kafkaTopic;
@@ -32,7 +35,7 @@ public class IntermediatePriceConfiguration {
 
     @Bean
     public EntityMapper<String, IntermediatePrice> intermediatePriceEntityMapper() {
-        return new IntermediatePriceMapper(5);
+        return new PerSecondsIntermediatePriceMapper(this.eventStepLengthInSecs);
     }
 
     @Bean
