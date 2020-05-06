@@ -2,6 +2,8 @@ package com.mapohl.gtfsprocessor.genericproducer;
 
 import com.google.common.collect.Maps;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.services.DownstreamEntityEmissionService;
+import com.mapohl.gtfsprocessor.genericproducer.services.sources.BasicEntityQueue;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -22,9 +24,6 @@ import java.util.Map;
 @Configuration
 public class TestEntityConfiguration {
 
-    @Value(value = "${kafka.topic}")
-    private String kafkaTopic;
-
     @Value(value = "${kafka.bootstrap-servers}")
     private String bootstrapServersStr;
 
@@ -37,15 +36,19 @@ public class TestEntityConfiguration {
     }
 
     @Bean
-    public NewTopic topic(
+    public NewTopic upstreamTopic(
+            @Value(value = "${kafka.upstream.topic}") String upstreamKafkaTopic,
             @Value(value = "${kafka.partition-count}") int partitionCount,
             @Value(value = "${kafka.replication-factor}") short replicationFactor) {
-        return new NewTopic(this.kafkaTopic(), partitionCount, replicationFactor);
+        return new NewTopic(upstreamKafkaTopic, partitionCount, replicationFactor);
     }
 
     @Bean
-    public String kafkaTopic() {
-        return this.kafkaTopic;
+    public NewTopic downstreamTopic(
+            @Value(value = "${kafka.downstream.topic}") String downstreamKafkaTopic,
+            @Value(value = "${kafka.partition-count}") int partitionCount,
+            @Value(value = "${kafka.replication-factor}") short replicationFactor) {
+        return new NewTopic(downstreamKafkaTopic, partitionCount, replicationFactor);
     }
 
     @Bean
@@ -66,5 +69,22 @@ public class TestEntityConfiguration {
     @Bean
     public EntityMapper<String, TestEntity> entityMapper() {
         return new TestEntityMapper();
+    }
+
+    @Bean
+    public CsvEntityProducer<Integer, TestEntity> taxiRideStartProducer(
+            @Value(value = "${kafka.upstream.topic}") String upstreamKafkaTopic,
+            EntityMapper<String, TestEntity> entityMapper,
+            KafkaTemplate<Integer, TestEntity> kafkaTemplate,
+            DownstreamEntityEmissionService<String, ?, ?>... downstreamEntityEmissionServices) {
+        return new CsvEntityProducer<>(entityMapper, upstreamKafkaTopic, kafkaTemplate, downstreamEntityEmissionServices);
+    }
+
+    @Bean
+    public DownstreamEntityEmissionService intermediatePriceEntityEmissionService(
+            @Value(value = "${kafka.downstream.topic}") String downstreamKafkaTopic,
+            EntityMapper<String, TestEntity> entityMapper,
+            KafkaTemplate<Integer, TestEntity> kafkaTemplate) {
+        return new DownstreamEntityEmissionService(new BasicEntityQueue<>(entityMapper), downstreamKafkaTopic, kafkaTemplate);
     }
 }
