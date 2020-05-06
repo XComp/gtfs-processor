@@ -9,17 +9,17 @@ taxiride_producer_cmd="./gradlew taxiride-producer:bootRun -PtaxiRideStart --arg
 
 # run stop command killing all but the current pane
 if [[ "$1" == "stop" ]]; then
-    tmux kill-pane -a -t0
-    ./gradlew composeDown
-    exit 0
+  tmux kill-pane -a -t0
+  ./gradlew composeDown
+  exit 0
 elif [[ "$1" == "start" ]]; then
-    # initialize environment
-    ./gradlew composeDown composeUp
+  # initialize environment
+  ./gradlew composeDown composeUp
 
-    tmux splitw -h "${dummy_consumer_cmd}taxiridestarts\""
-    tmux splitw -p 66 -v "${dummy_consumer_cmd}intermediateprices\""
-    tmux splitw -v "${dummy_consumer_cmd}taxirideends\""
+  tmux splitw -h "${dummy_consumer_cmd}taxiridestarts\""
+  tmux splitw -p 66 -v "${dummy_consumer_cmd}intermediateprices\""
+  tmux splitw -v "${dummy_consumer_cmd}taxirideends\""
 
-    tmux selectp -t0
-    eval "${taxiride_producer_cmd}"
+  tmux selectp -t0
+  eval "${taxiride_producer_cmd}"
 fi
