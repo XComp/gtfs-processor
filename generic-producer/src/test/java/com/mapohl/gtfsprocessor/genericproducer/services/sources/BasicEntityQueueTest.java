@@ -134,4 +134,44 @@ class BasicEntityQueueTest {
         assertFalse(downstreamTestInstance.hasNext());
     }
 
+    @Test
+    public void testLateDataPropagation() {
+        EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
+        BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(entityMapper);
+        BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(entityMapper, downstreamTestInstance);
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        upstreamTestInstance.add("1");
+        upstreamTestInstance.add("12");
+
+        // end-of-data is reached before data is processed
+        upstreamTestInstance.endOfDataReached();
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(1), upstreamTestInstance.next());
+        assertEquals(createEntity(1), downstreamTestInstance.next());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(1), upstreamTestInstance.next());
+        assertEquals(createEntity(1), downstreamTestInstance.next());
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertEquals(createEntity(2), upstreamTestInstance.next());
+        assertEquals(createEntity(2), downstreamTestInstance.next());
+
+        assertFalse(upstreamTestInstance.hasNext());
+        assertFalse(downstreamTestInstance.hasNext());
+    }
+
 }
