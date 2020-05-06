@@ -27,7 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(
         classes = TestEntityConfiguration.class,
-        args = {"--csv", "src/test/resources/test.csv", "-s", "1970-01-01T00:01:00", "-r", "50", "-ru", "MILLIS"})
+        args = {"--csv", "src/test/resources/test.csv",
+                "-s", "1970-01-01T00:45:00",
+                "-t", "90",
+                "-tu", "MINUTES",
+                "-r", "50",
+                "-ru", "MILLIS"})
 @DirtiesContext
 @EmbeddedKafka
 public class CsvEntityProducerTest {
