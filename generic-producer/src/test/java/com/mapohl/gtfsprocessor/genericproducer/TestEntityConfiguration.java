@@ -72,19 +72,19 @@ public class TestEntityConfiguration {
     }
 
     @Bean
-    public CsvEntityProducer<Integer, TestEntity> taxiRideStartProducer(
+    public DownstreamEntityEmissionService downstreamEmissionService(
+            @Value(value = "${kafka.downstream.topic}") String downstreamKafkaTopic,
+            EntityMapper<String, TestEntity> entityMapper,
+            KafkaTemplate<Integer, TestEntity> kafkaTemplate) {
+        return new DownstreamEntityEmissionService(new BasicEntityQueue<>(entityMapper), downstreamKafkaTopic, kafkaTemplate);
+    }
+
+    @Bean
+    public CsvEntityProducer<Integer, TestEntity> entityProducer(
             @Value(value = "${kafka.upstream.topic}") String upstreamKafkaTopic,
             EntityMapper<String, TestEntity> entityMapper,
             KafkaTemplate<Integer, TestEntity> kafkaTemplate,
             DownstreamEntityEmissionService<String, ?, ?>... downstreamEntityEmissionServices) {
         return new CsvEntityProducer<>(entityMapper, upstreamKafkaTopic, kafkaTemplate, downstreamEntityEmissionServices);
-    }
-
-    @Bean
-    public DownstreamEntityEmissionService intermediatePriceEntityEmissionService(
-            @Value(value = "${kafka.downstream.topic}") String downstreamKafkaTopic,
-            EntityMapper<String, TestEntity> entityMapper,
-            KafkaTemplate<Integer, TestEntity> kafkaTemplate) {
-        return new DownstreamEntityEmissionService(new BasicEntityQueue<>(entityMapper), downstreamKafkaTopic, kafkaTemplate);
     }
 }
