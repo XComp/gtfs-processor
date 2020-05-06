@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
@@ -61,23 +62,20 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
 
     @Override
     public Instant peekNextEventTime() {
-        while (true) {
-            if (!this.entityQueue.isEmpty()) {
-                return this.entityQueue.peek().getEventTime();
-            }
+        if (!this.entityQueue.isEmpty()) {
+            return this.entityQueue.peek().getEventTime();
+        }
 
-            if (this.inputQueue.isEmpty()) {
-                return null;
-            }
-
-            List<E> entities = this.entityMapper.map(this.inputQueue.peek());
-
+        Iterator<I> inputIterator = this.inputQueue.iterator();
+        while (inputIterator.hasNext()) {
+            I input = inputIterator.next();
+            List<E> entities = this.entityMapper.map(input);
             if (!entities.isEmpty()) {
                 return entities.get(0).getEventTime();
             }
-
-            this.inputQueue.poll();
         }
+
+        return null;
     }
 
     protected boolean upstreamHasNext() {

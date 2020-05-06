@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.test.domain.NoEntitiesMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -169,6 +170,29 @@ class BasicEntityQueueTest {
 
         assertEquals(createEntity(2), upstreamTestInstance.next());
         assertEquals(createEntity(2), downstreamTestInstance.next());
+
+        assertFalse(upstreamTestInstance.hasNext());
+        assertFalse(downstreamTestInstance.hasNext());
+    }
+
+    @Test
+    public void testNoEntitiesInputPropagation() {
+        BasicEntityQueue<String, TestEntity> downstreamTestInstance = new BasicEntityQueue(new TestEntityMapper());
+        BasicEntityQueue<String, TestEntity> upstreamTestInstance = new BasicEntityQueue(new NoEntitiesMapper(), downstreamTestInstance);
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        upstreamTestInstance.add("1");
+
+        // end-of-data is reached before data is processed
+        upstreamTestInstance.endOfDataReached();
+
+        assertFalse(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        assertThrows(NoSuchElementException.class, () -> upstreamTestInstance.next());
+        assertEquals(createEntity(1), downstreamTestInstance.next());
 
         assertFalse(upstreamTestInstance.hasNext());
         assertFalse(downstreamTestInstance.hasNext());
