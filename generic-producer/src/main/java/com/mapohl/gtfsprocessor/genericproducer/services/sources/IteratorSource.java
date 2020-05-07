@@ -14,10 +14,6 @@ public class IteratorSource<I, E extends Entity<?>> extends BasicEntityQueue<I, 
     private final Iterator<I> inputIterator;
     private final int bufferSize;
 
-    public IteratorSource(Iterator<I> inputIterator, EntityMapper<I, E> entityMapper, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
-        this(inputIterator, 1, entityMapper, downstreamEntityQueues);
-    }
-
     public IteratorSource(Iterator<I> inputIterator, int bufferSize, EntityMapper<I, E> entityMapper, EntityQueue<I, ? extends Entity<?>>... downstreamEntityQueues) {
         super(entityMapper, downstreamEntityQueues);
 

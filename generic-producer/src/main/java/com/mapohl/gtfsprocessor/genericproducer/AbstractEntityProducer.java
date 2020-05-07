@@ -56,6 +56,9 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
     @CommandLine.Option(names = {"-e", "--entity-limit"}, defaultValue = Integer.MAX_VALUE + "")
     private int entityLimit;
 
+    @CommandLine.Option(names = {"-b", "--buffer-size"}, defaultValue = 100 + "")
+    private int bufferSize;
+
     protected void logParameters() {
         log.info("Parameter information:");
         log.info("  Start time (--start-time): {}", this.inclusiveStartTimeStr);
@@ -64,6 +67,7 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
         log.info("  Header lines (--header-lines): {}", this.initialLinesToIgnore);
         log.info("  Line limit (--line-limit): {}", this.lineLimit);
         log.info("  Entity limit (--entity-limit): {}", this.entityLimit);
+        log.info("  Buffer size (--buffer-size): {}", this.bufferSize);
     }
 
     private Instant getStartTime() {
@@ -90,6 +94,7 @@ public abstract class AbstractEntityProducer<I, ID, E extends Entity<ID>> implem
 
     protected EntitySource<E> createEntitySource(Iterator<String> iterator) {
         return new IteratorSource(iterator,
+                this.getBufferSize(),
                 this.getInitialEntityMapper(),
                 this.getDownstreamEntityQueues());
     }
