@@ -24,6 +24,7 @@ class BaseEntityEmissionServiceTest {
         return new BaseEntityEmissionService(
                 new IteratorSource<>(
                         Lists.newArrayList(inputLines).iterator(),
+                        1,
                         new TestEntityMapper()),
                 TEST_TOPIC,
                 kafkaTemplate);

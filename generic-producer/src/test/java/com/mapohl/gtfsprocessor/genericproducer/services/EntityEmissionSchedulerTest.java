@@ -29,7 +29,7 @@ class EntityEmissionSchedulerTest {
     public void initializeTest(String... inputLines) {
         EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
         BasicEntityQueue<String, TestEntity> downstreamQueue = new BasicEntityQueue<>(entityMapper);
-        EntitySource<TestEntity> initialSource = new IteratorSource<>(Lists.newArrayList(inputLines).iterator(), entityMapper, downstreamQueue);
+        EntitySource<TestEntity> initialSource = new IteratorSource<>(Lists.newArrayList(inputLines).iterator(), 1, entityMapper, downstreamQueue);
 
         initialKafkaTemplate = Mockito.mock(KafkaTemplate.class);
         downstreamKafkaTemplate = Mockito.mock(KafkaTemplate.class);
