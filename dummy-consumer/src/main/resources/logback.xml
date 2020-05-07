@@ -9,5 +9,5 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="com.mapohl.gtfsprocessor.dummyconsumer.DummyConsumer" level="INFO"/>
+    <logger name="com.mapohl.nyckafka.dummyconsumer.DummyConsumer" level="INFO"/>
 </configuration>

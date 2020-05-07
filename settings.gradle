@@ -1,4 +1,4 @@
-rootProject.name = 'gtfs-processor'
+rootProject.name = 'nyc-kafka'
 include 'dummy-consumer'
 include 'generic-producer'
 include 'speedtracker-producer'

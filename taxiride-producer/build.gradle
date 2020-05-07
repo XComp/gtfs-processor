@@ -26,9 +26,9 @@ def springConfigurations = [
         "taxiRideStart": "TaxiRideStartProducer",
 ]
 
-springBoot.mainClassName = "com.mapohl.gtfsprocessor.taxiride.${defaultSpringConfiguration}"
+springBoot.mainClassName = "com.mapohl.nyckafka.taxiride.${defaultSpringConfiguration}"
 springConfigurations.each { prop, mainClassName ->
     if (project.hasProperty(prop))
-        springBoot.mainClassName = "com.mapohl.gtfsprocessor.taxiride.${mainClassName}"
+        springBoot.mainClassName = "com.mapohl.nyckafka.taxiride.${mainClassName}"
 }
 
