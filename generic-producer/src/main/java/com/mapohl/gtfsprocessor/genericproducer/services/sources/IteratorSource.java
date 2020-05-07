@@ -3,6 +3,7 @@ package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
@@ -40,8 +41,8 @@ public class IteratorSource<I, E extends Entity<?>> extends BasicEntityQueue<I, 
     }
 
     @Override
-    public E next() {
-        E entity = super.next();
+    public E next(TimePeriod timePeriod) {
+        E entity = super.next(timePeriod);
         this.fillBuffer();
 
         return entity;

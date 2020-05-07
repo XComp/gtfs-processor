@@ -1,7 +1,9 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
+import com.google.common.base.Preconditions;
 import com.mapohl.gtfsprocessor.genericproducer.domain.Entity;
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,20 +64,22 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
 
     @Override
     public Instant peekNextEventTime() {
+        Instant nextEventTime = null;
         if (!this.entityQueue.isEmpty()) {
-            return this.entityQueue.peek().getEventTime();
+            nextEventTime = this.entityQueue.peek().getEventTime();
         }
 
         Iterator<I> inputIterator = this.inputQueue.iterator();
         while (inputIterator.hasNext()) {
             I input = inputIterator.next();
             List<E> entities = this.entityMapper.map(input);
-            if (!entities.isEmpty()) {
+            if (!entities.isEmpty() &&
+                    (nextEventTime == null || !nextEventTime.isBefore(entities.get(0).getEventTime()))) {
                 return entities.get(0).getEventTime();
             }
         }
 
-        return null;
+        return nextEventTime;
     }
 
     protected boolean upstreamHasNext() {
@@ -88,33 +92,58 @@ public class BasicEntityQueue<I, E extends Entity<?>> implements EntityQueue<I, 
     }
 
     @Override
+    public boolean hasNext(TimePeriod timePeriod) {
+        Instant peekedTime = this.peekNextEventTime();
+        return peekedTime != null ? !timePeriod.timeIsAfterTimePeriod(peekedTime) : false;
+    }
+
+    @Override
     public boolean isEmpty() {
         return this.peekNextEventTime() == null;
     }
 
     @Override
-    public E next() {
-        while (true) {
-            if (!this.entityQueue.isEmpty()) {
-                return this.entityQueue.poll();
+    public E next(TimePeriod timePeriod) {
+        Preconditions.checkNotNull(timePeriod);
+
+        this.loadInputs(timePeriod);
+
+        if (!this.entityQueue.isEmpty()) {
+            if (timePeriod.timeIsAfterTimePeriod(this.entityQueue.peek().getEventTime())) {
+                return null;
             }
 
+            return this.entityQueue.poll();
+        }
+
+        if (this.inputQueue.isEmpty() && !this.upstreamHasNext()) {
+            throw new NoSuchElementException();
+        }
+
+        return null;
+    }
+
+    private void loadInputs(TimePeriod timePeriod) {
+        while (true) {
             if (this.inputQueue.isEmpty()) {
-                if (this.upstreamHasNext()) {
-                    return null;
+                if (!this.upstreamHasNext()) {
+                    this.propagateEndOfDataDownstream();
                 }
 
-                this.propagateEndOfDataDownstream();
-                throw new NoSuchElementException();
+                return;
             }
 
-            I input = this.inputQueue.poll();
+            I input = this.inputQueue.peek();
+            List<E> entities = this.entityMapper.map(input);
+            if (!entities.isEmpty()) {
+                if (timePeriod.timeIsAfterTimePeriod(entities.get(0).getEventTime())) {
+                    return;
+                }
+            }
+
             this.propagateInputToDownstreamQueues(input);
-            if (this.inputQueue.isEmpty() && !this.upstreamHasNext()) {
-                this.propagateEndOfDataDownstream();
-            }
-
-            this.entityQueue.addAll(this.entityMapper.map(input));
+            this.entityQueue.addAll(entities);
+            this.inputQueue.remove();
         }
     }
 

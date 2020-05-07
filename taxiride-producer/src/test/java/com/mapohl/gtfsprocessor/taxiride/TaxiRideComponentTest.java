@@ -60,7 +60,7 @@ public class TaxiRideComponentTest {
             assertTrue(it.hasNext());
 
             IntermediatePrice actual = it.next().value();
-            assertEquals(expectedPrice, actual.getPrice());
+            assertEquals(expectedPrice, actual.getPrice(), "Expected price of " + expectedPrice + " differs from the actual price (" + actual.getPrice() + ") for event time '" + actual.getEventTime() + "'.");
             assertEquals(eventTime, actual.getEventTime());
         }
     }
@@ -98,7 +98,7 @@ public class TaxiRideComponentTest {
         assertTrue(actualIterator.hasNext());
 
         actual = actualIterator.next().value();
-        assertEquals(INSTANT_BUILDER.minute(5).second(10).build(), actual.getEventTime());
+        assertEquals(INSTANT_BUILDER.minute(5).second(15).build(), actual.getEventTime());
         assertEquals(261, actual.getPickupZone().getZoneId());
         assertEquals(1, actual.getPassengerCount());
 
@@ -116,31 +116,81 @@ public class TaxiRideComponentTest {
     @DisplayName("Test IntermediatePrice emission")
     @Test
     public void testIntermediatePriceEmission() {
+        double expectedRow0PriceIncrease = 2.0;
+        // row1 has a total price of 0.0; hence, it doesn't have an expected increase
+        double expectedRow2PriceIncrease = 10.0;
+
         ConsumerRecords<Integer, IntermediatePrice> actualConsumerRecords = initializeConsumer(IntermediatePrice.class, this.intermediateTopic);
         assertEquals(12, actualConsumerRecords.count());
 
         Iterator<ConsumerRecord<Integer, IntermediatePrice>> actualIterator = actualConsumerRecords.records(this.intermediateTopic).iterator();
 
-        // first row
-        assertIntermediatePriceRecordsOfRow(actualIterator, 2.0,
-                INSTANT_BUILDER.minute(5).second(10).build(),
-                INSTANT_BUILDER.minute(5).second(20).build(),
-                INSTANT_BUILDER.minute(5).second(30).build(),
-                INSTANT_BUILDER.minute(5).second(40).build(),
-                INSTANT_BUILDER.minute(5).second(50).build());
+        // row 0 - 1st entity
+        assertTrue(actualIterator.hasNext());
+        IntermediatePrice actual = actualIterator.next().value();
+        int actualRow0Id = actual.getEntityId();
+        double expectedRow0Price = expectedRow0PriceIncrease;
 
-        // second row
-        assertIntermediatePriceRecordsOfRow(actualIterator, 0.0,
-                INSTANT_BUILDER.minute(5).second(20).build(),
-                INSTANT_BUILDER.minute(5).second(30).build());
+        assertEquals(expectedRow0Price, actual.getPrice());
+        assertEquals(INSTANT_BUILDER.minute(5).second(10).build(), actual.getEventTime());
 
-        // third row
-        assertIntermediatePriceRecordsOfRow(actualIterator, 10.0,
-                INSTANT_BUILDER.minute(6).second(10).build(),
-                INSTANT_BUILDER.minute(6).second(20).build(),
-                INSTANT_BUILDER.minute(6).second(30).build(),
-                INSTANT_BUILDER.minute(6).second(40).build(),
-                INSTANT_BUILDER.minute(6).second(50).build());
+        // row 0 - 2nd entity
+        expectedRow0Price += expectedRow0PriceIncrease;
+        assertTrue(actualIterator.hasNext());
+        actual = actualIterator.next().value();
+
+        assertEquals(actualRow0Id, actual.getEntityId());
+        assertEquals(expectedRow0Price, actual.getPrice());
+        assertEquals(INSTANT_BUILDER.minute(5).second(20).build(), actual.getEventTime());
+
+        // row 1 - 1st entity
+        assertTrue(actualIterator.hasNext());
+        actual = actualIterator.next().value();
+        int actualRow1Id = actual.getEntityId();
+
+        assertEquals(0.0, actual.getPrice());
+        assertEquals(INSTANT_BUILDER.minute(5).second(25).build(), actual.getEventTime());
+
+        // row 0 - 3rd entity
+        expectedRow0Price += expectedRow0PriceIncrease;
+        assertTrue(actualIterator.hasNext());
+        actual = actualIterator.next().value();
+
+        assertEquals(actualRow0Id, actual.getEntityId());
+        assertEquals(expectedRow0Price, actual.getPrice());
+        assertEquals(INSTANT_BUILDER.minute(5).second(30).build(), actual.getEventTime());
+
+        // row 1 - 2nd entity
+        assertTrue(actualIterator.hasNext());
+        actual = actualIterator.next().value();
+
+        assertEquals(actualRow1Id, actual.getEntityId());
+        assertEquals(0.0, actual.getPrice());
+        assertEquals(INSTANT_BUILDER.minute(5).second(35).build(), actual.getEventTime());
+
+        // row 0 - 4th & 5th entities
+        for (int expectedSecond = 40; expectedSecond <= 50; expectedSecond += 10) {
+            expectedRow0Price += expectedRow0PriceIncrease;
+            assertTrue(actualIterator.hasNext());
+            actual = actualIterator.next().value();
+
+            assertEquals(actualRow0Id, actual.getEntityId());
+            assertEquals(expectedRow0Price, actual.getPrice());
+            assertEquals(INSTANT_BUILDER.minute(5).second(expectedSecond).build(), actual.getEventTime());
+        }
+
+        // row 0 - 4th & 5th entities
+        double expectedRow2Price = expectedRow2PriceIncrease;
+        Integer actualRow2Id = null;
+        for (int expectedSecond = 10; expectedSecond <= 50; expectedSecond += 10, expectedRow2Price += expectedRow2PriceIncrease) {
+            assertTrue(actualIterator.hasNext());
+            actual = actualIterator.next().value();
+            actualRow2Id = actualRow2Id == null ? actual.getEntityId() : actualRow2Id;
+
+            assertEquals(actualRow2Id, actual.getEntityId());
+            assertEquals(expectedRow2Price, actual.getPrice());
+            assertEquals(INSTANT_BUILDER.minute(6).second(expectedSecond).build(), actual.getEventTime());
+        }
 
         assertFalse(actualIterator.hasNext());
     }
@@ -157,7 +207,7 @@ public class TaxiRideComponentTest {
         assertTrue(actualIterator.hasNext());
 
         TaxiRideEnd actual = actualIterator.next().value();
-        assertEquals(INSTANT_BUILDER.minute(5).second(40).build(), actual.getEventTime());
+        assertEquals(INSTANT_BUILDER.minute(5).second(45).build(), actual.getEventTime());
         assertEquals(193, actual.getDropOffZone().getZoneId());
         assertEquals(2.0, actual.getDistance());
         assertEquals(0.0, actual.getTollAmount());

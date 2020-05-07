@@ -7,7 +7,6 @@ import com.mapohl.gtfsprocessor.genericproducer.services.sources.EntitySource;
 import com.mapohl.gtfsprocessor.genericproducer.services.sources.IteratorSource;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,11 +26,10 @@ class EntityEmissionSchedulerTest {
     private KafkaTemplate<Integer, TestEntity> downstreamKafkaTemplate;
     private DownstreamEntityEmissionService downstreamEmissionService;
 
-    @BeforeEach
-    public void initializeTest() {
+    public void initializeTest(String... inputLines) {
         EntityMapper<String, TestEntity> entityMapper = new TestEntityMapper();
         BasicEntityQueue<String, TestEntity> downstreamQueue = new BasicEntityQueue<>(entityMapper);
-        EntitySource<TestEntity> initialSource = new IteratorSource<>(Lists.newArrayList("0", "1", "23").iterator(), entityMapper, downstreamQueue);
+        EntitySource<TestEntity> initialSource = new IteratorSource<>(Lists.newArrayList(inputLines).iterator(), entityMapper, downstreamQueue);
 
         initialKafkaTemplate = Mockito.mock(KafkaTemplate.class);
         downstreamKafkaTemplate = Mockito.mock(KafkaTemplate.class);
@@ -42,6 +40,7 @@ class EntityEmissionSchedulerTest {
 
     @Test
     public void testEmissionWithoutLimit() throws Exception {
+        initializeTest("0", "1", "23");
         EntityEmissionScheduler testInstance = new EntityEmissionScheduler(initialEmissionService, downstreamEmissionService);
 
         // no initial emissions are happening
@@ -71,6 +70,7 @@ class EntityEmissionSchedulerTest {
 
     @Test
     public void testEmissionWithLimit() throws Exception {
+        initializeTest("0", "1", "23");
         EntityEmissionScheduler testInstance = new EntityEmissionScheduler(initialEmissionService, 2, downstreamEmissionService);
 
         // no initial emissions are happening
@@ -97,6 +97,35 @@ class EntityEmissionSchedulerTest {
         // check whether the right amount of emissions happened
         verify(initialKafkaTemplate, times(2)).send(eq(TEST_TOPIC), any());
         verify(downstreamKafkaTemplate, times(2)).send(eq(DOWNSTREAM_TEST_TOPIC), any());
+    }
+
+    @Test
+    public void testLatePropagation() throws Exception {
+        initializeTest("1234", "123", "234");
+        EntityEmissionScheduler testInstance = new EntityEmissionScheduler(initialEmissionService, downstreamEmissionService);
+
+        // no initial emissions are happening
+        verifyNoInteractions(initialKafkaTemplate);
+        verifyNoInteractions(downstreamKafkaTemplate);
+
+        testInstance.emit(createTimePeriod(0, 30, 1, 30), Duration.ofMillis(50));
+
+        // check all other elements
+        verify(initialKafkaTemplate, times(2)).send(TEST_TOPIC, createEntity(1));
+        verify(downstreamKafkaTemplate, times(2)).send(DOWNSTREAM_TEST_TOPIC, createEntity(1));
+
+        verify(initialKafkaTemplate, times(3)).send(TEST_TOPIC, createEntity(2));
+        verify(downstreamKafkaTemplate, times(3)).send(DOWNSTREAM_TEST_TOPIC, createEntity(2));
+
+        verify(initialKafkaTemplate, times(3)).send(TEST_TOPIC, createEntity(3));
+        verify(downstreamKafkaTemplate, times(3)).send(DOWNSTREAM_TEST_TOPIC, createEntity(3));
+
+        verify(initialKafkaTemplate, times(2)).send(TEST_TOPIC, createEntity(4));
+        verify(downstreamKafkaTemplate, times(2)).send(DOWNSTREAM_TEST_TOPIC, createEntity(4));
+
+        // check whether the right amount of emissions happened
+        verify(initialKafkaTemplate, times(10)).send(eq(TEST_TOPIC), any());
+        verify(downstreamKafkaTemplate, times(10)).send(eq(DOWNSTREAM_TEST_TOPIC), any());
     }
 
 }

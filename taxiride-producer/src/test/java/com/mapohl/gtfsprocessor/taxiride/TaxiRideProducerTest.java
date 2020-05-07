@@ -74,8 +74,8 @@ class TaxiRideProducerTest {
                         .totalAmount(12.0)
                         .build(),
                 TaxiRide.builder()
-                        .pickupTimeStr("2009-01-01 00:05:10")
-                        .dropOffTimeStr("2009-01-01 00:05:40")
+                        .pickupTimeStr("2009-01-01 00:05:15")
+                        .dropOffTimeStr("2009-01-01 00:05:45")
                         .passengerCount(1)
                         .distance(2.0)
                         .pickupZone(this.nycTaxiZoneIndex.get(261))

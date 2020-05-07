@@ -1,6 +1,7 @@
 package com.mapohl.gtfsprocessor.genericproducer.services.sources;
 
 import com.mapohl.gtfsprocessor.genericproducer.domain.EntityMapper;
+import com.mapohl.gtfsprocessor.genericproducer.utils.TimePeriod;
 import com.mapohl.gtfsprocessor.test.domain.NoEntitiesMapper;
 import com.mapohl.gtfsprocessor.test.domain.TestEntity;
 import com.mapohl.gtfsprocessor.test.domain.TestEntityMapper;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.NoSuchElementException;
 
 import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createEntity;
+import static com.mapohl.gtfsprocessor.test.utils.TestUtils.createTimePeriod;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BasicEntityQueueTest {
@@ -25,17 +27,20 @@ class BasicEntityQueueTest {
     public void testNoEntity() {
         assertTrue(testInstance.hasNext());
         assertNull(testInstance.peekNextEventTime());
-        assertNull(testInstance.next());
+        assertNull(testInstance.next(createTimePeriod(0, 0, 1, 0)));
     }
 
     @Test
     public void testOneEntity() {
-        testInstance.add("0");
+        testInstance.add("1");
 
-        TestEntity e = createEntity(0);
+        TimePeriod timePeriod = createTimePeriod(0, 15, 0, 45);
+        TestEntity e = createEntity(1);
         assertTrue(testInstance.hasNext());
         assertEquals(e.getEventTime(), testInstance.peekNextEventTime());
-        assertEquals(e, testInstance.next());
+
+        assertNull(testInstance.next(timePeriod));
+        assertEquals(e, testInstance.next(timePeriod.next()));
     }
 
     @Test
@@ -45,8 +50,13 @@ class BasicEntityQueueTest {
         testInstance.endOfDataReached();
 
         assertFalse(testInstance.hasNext());
-        assertThrows(NoSuchElementException.class, () -> testInstance.next());
+        assertThrows(NoSuchElementException.class, () -> testInstance.next(createTimePeriod(0, 0, 0, 1)));
         assertThrows(IllegalStateException.class, () -> testInstance.add("0"));
+    }
+
+    @Test
+    public void testNullHandling() {
+        assertThrows(NullPointerException.class, () -> testInstance.next(null));
     }
 
     @Test
@@ -56,8 +66,9 @@ class BasicEntityQueueTest {
         testInstance.add("0");
 
         // order gets fixed
-        assertEquals(createEntity(0), testInstance.next());
-        assertEquals(createEntity(1), testInstance.next());
+        TimePeriod timePeriod = createTimePeriod(0, 0, 1, 30);
+        assertEquals(createEntity(0), testInstance.next(timePeriod));
+        assertEquals(createEntity(1), testInstance.next(timePeriod));
     }
 
     @Test
@@ -74,19 +85,20 @@ class BasicEntityQueueTest {
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
+        TimePeriod timePeriod = createTimePeriod(0, 0, 0, 5);
         TestEntity e0 = createEntity(0);
-        assertEquals(e0, upstreamTestInstance.next());
+        assertEquals(e0, upstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(e0, downstreamTestInstance.next());
+        assertEquals(e0, downstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertNull(upstreamTestInstance.next());
-        assertNull(downstreamTestInstance.next());
+        assertNull(upstreamTestInstance.next(timePeriod));
+        assertNull(downstreamTestInstance.next(timePeriod));
 
         // end-of-data is reached after all data was processed
         upstreamTestInstance.endOfDataReached();
@@ -113,23 +125,28 @@ class BasicEntityQueueTest {
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(createEntity(0), upstreamTestInstance.next());
-        assertEquals(createEntity(0), downstreamTestInstance.next());
+        TimePeriod timePeriod = createTimePeriod(0, 0, 1, 30);
+        assertEquals(createEntity(0), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(0), downstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertTrue(upstreamTestInstance.hasNext());
-        assertTrue(downstreamTestInstance.hasNext());
-
-        assertEquals(createEntity(1), upstreamTestInstance.next());
-        assertEquals(createEntity(1), downstreamTestInstance.next());
+        assertEquals(createEntity(1), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(1), downstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(createEntity(2), upstreamTestInstance.next());
-        assertEquals(createEntity(2), downstreamTestInstance.next());
+        assertNull(upstreamTestInstance.next(timePeriod));
+        assertNull(downstreamTestInstance.next(timePeriod));
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        timePeriod = timePeriod.next();
+        assertEquals(createEntity(2), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(2), downstreamTestInstance.next(timePeriod));
 
         assertFalse(upstreamTestInstance.hasNext());
         assertFalse(downstreamTestInstance.hasNext());
@@ -153,23 +170,28 @@ class BasicEntityQueueTest {
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(createEntity(1), upstreamTestInstance.next());
-        assertEquals(createEntity(1), downstreamTestInstance.next());
+        TimePeriod timePeriod = createTimePeriod(1, 0, 2, 0);
+        assertEquals(createEntity(1), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(1), downstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertTrue(upstreamTestInstance.hasNext());
-        assertTrue(downstreamTestInstance.hasNext());
-
-        assertEquals(createEntity(1), upstreamTestInstance.next());
-        assertEquals(createEntity(1), downstreamTestInstance.next());
+        assertEquals(createEntity(1), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(1), downstreamTestInstance.next(timePeriod));
 
         assertTrue(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertEquals(createEntity(2), upstreamTestInstance.next());
-        assertEquals(createEntity(2), downstreamTestInstance.next());
+        assertNull(upstreamTestInstance.next(timePeriod));
+        assertNull(downstreamTestInstance.next(timePeriod));
+
+        assertTrue(upstreamTestInstance.hasNext());
+        assertTrue(downstreamTestInstance.hasNext());
+
+        timePeriod = timePeriod.next();
+        assertEquals(createEntity(2), upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(2), downstreamTestInstance.next(timePeriod));
 
         assertFalse(upstreamTestInstance.hasNext());
         assertFalse(downstreamTestInstance.hasNext());
@@ -191,8 +213,9 @@ class BasicEntityQueueTest {
         assertFalse(upstreamTestInstance.hasNext());
         assertTrue(downstreamTestInstance.hasNext());
 
-        assertThrows(NoSuchElementException.class, () -> upstreamTestInstance.next());
-        assertEquals(createEntity(1), downstreamTestInstance.next());
+        TimePeriod timePeriod = createTimePeriod(1, 0, 1, 30);
+        assertThrows(NoSuchElementException.class, () -> upstreamTestInstance.next(timePeriod));
+        assertEquals(createEntity(1), downstreamTestInstance.next(timePeriod));
 
         assertFalse(upstreamTestInstance.hasNext());
         assertFalse(downstreamTestInstance.hasNext());
