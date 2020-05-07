@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.commonproducer.services;
 
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
+import com.mapohl.nyckafka.common.TimePeriod;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;

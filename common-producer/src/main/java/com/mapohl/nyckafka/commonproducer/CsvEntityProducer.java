@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.commonproducer;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
 import com.mapohl.nyckafka.commonproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.nyckafka.commonproducer.services.EntityEmissionScheduler;

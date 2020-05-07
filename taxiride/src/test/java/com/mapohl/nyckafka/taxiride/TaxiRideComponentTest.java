@@ -1,11 +1,11 @@
 package com.mapohl.nyckafka.taxiride;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
+import com.mapohl.nyckafka.common.InstantBuilder;
 import com.mapohl.nyckafka.taxiride.configuration.TaxiRideStartConfiguration;
 import com.mapohl.nyckafka.taxiride.domain.taxiride.end.TaxiRideEnd;
 import com.mapohl.nyckafka.taxiride.domain.taxiride.intermediateprice.IntermediatePrice;
 import com.mapohl.nyckafka.taxiride.domain.taxiride.start.TaxiRideStart;
-import com.mapohl.nyckafka.test.utils.InstantBuilder;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

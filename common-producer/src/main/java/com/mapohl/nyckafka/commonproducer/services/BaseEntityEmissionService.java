@@ -1,8 +1,8 @@
 package com.mapohl.nyckafka.commonproducer.services;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
+import com.mapohl.nyckafka.common.TimePeriod;
 import com.mapohl.nyckafka.commonproducer.services.sources.EntitySource;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

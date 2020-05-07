@@ -1,4 +1,4 @@
-package com.mapohl.nyckafka.test.utils;
+package com.mapohl.nyckafka.common;
 
 import com.google.common.base.Preconditions;
 

@@ -9,6 +9,9 @@ configurations {
 jar.archiveBaseName = 'common-producer'
 
 dependencies {
+    implementation project(':common')
+    testImplementation testFixtures(project(':common'))
+
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-stream-binder-kafka'
     implementation group: 'info.picocli', name: 'picocli'
@@ -17,8 +20,6 @@ dependencies {
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
     testFixturesAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
-
-    testFixturesImplementation group: 'com.google.guava', name: 'guava'
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
 

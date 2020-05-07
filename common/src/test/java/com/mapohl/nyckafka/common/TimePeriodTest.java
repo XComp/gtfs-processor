@@ -1,4 +1,4 @@
-package com.mapohl.nyckafka.commonproducer.utils;
+package com.mapohl.nyckafka.common;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,21 +6,23 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.Instant;
 
+import static com.mapohl.nyckafka.common.TestUtils.createInstant;
+import static com.mapohl.nyckafka.common.TestUtils.createTimePeriod;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TimePeriodTest {
 
-    private static Instant INSTANT_0_00 = Instant.parse("2020-01-02T00:00:00Z");
-    private static Instant INSTANT_0_30 = Instant.parse("2020-01-02T00:30:00Z");
-    private static Instant INSTANT_1_00 = Instant.parse("2020-01-02T01:00:00Z");
-    private static Instant INSTANT_1_30 = Instant.parse("2020-01-02T01:30:00Z");
-    private static Instant INSTANT_2_00 = Instant.parse("2020-01-02T02:00:00Z");
+    private static Instant INSTANT_0_00 = createInstant(0, 0);
+    private static Instant INSTANT_0_30 = createInstant(0, 30);
+    private static Instant INSTANT_1_00 = createInstant(1, 0);
+    private static Instant INSTANT_1_30 = createInstant(1, 30);
+    private static Instant INSTANT_2_00 = createInstant(2, 0);
 
     private TimePeriod testInstance;
 
     @BeforeEach
     public void setup() {
-        testInstance = new TimePeriod(INSTANT_0_30, INSTANT_1_30);
+        testInstance = createTimePeriod(0, 30, 1, 30);
     }
 
     @Test

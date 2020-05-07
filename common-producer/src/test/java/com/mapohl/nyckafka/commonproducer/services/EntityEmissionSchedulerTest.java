@@ -1,19 +1,19 @@
 package com.mapohl.nyckafka.commonproducer.services;
 
 import com.google.common.collect.Lists;
+import com.mapohl.nyckafka.common.TestEntity;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
 import com.mapohl.nyckafka.commonproducer.services.sources.BasicEntityQueue;
 import com.mapohl.nyckafka.commonproducer.services.sources.EntitySource;
 import com.mapohl.nyckafka.commonproducer.services.sources.IteratorSource;
-import com.mapohl.nyckafka.test.domain.TestEntity;
-import com.mapohl.nyckafka.test.domain.TestEntityMapper;
+import com.mapohl.nyckafka.commonproducer.testutils.TestEntityMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Duration;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.*;
+import static com.mapohl.nyckafka.common.TestUtils.*;
 import static org.mockito.Mockito.*;
 
 class EntityEmissionSchedulerTest {

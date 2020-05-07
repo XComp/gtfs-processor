@@ -1,7 +1,7 @@
 package com.mapohl.nyckafka.commonproducer.services.sources;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
+import com.mapohl.nyckafka.common.Entity;
+import com.mapohl.nyckafka.common.TimePeriod;
 
 import java.time.Instant;
 

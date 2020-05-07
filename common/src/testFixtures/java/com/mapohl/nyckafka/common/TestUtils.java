@@ -1,7 +1,4 @@
-package com.mapohl.nyckafka.test.utils;
-
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
-import com.mapohl.nyckafka.test.domain.TestEntity;
+package com.mapohl.nyckafka.common;
 
 import java.time.Instant;
 

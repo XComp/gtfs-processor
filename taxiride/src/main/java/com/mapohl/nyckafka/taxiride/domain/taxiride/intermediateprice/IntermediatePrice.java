@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.taxiride.domain.taxiride.intermediateprice;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

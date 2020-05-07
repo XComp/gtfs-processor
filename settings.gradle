@@ -1,4 +1,5 @@
 rootProject.name = 'nyc-kafka'
+include 'common'
 include 'common-consumer'
 include 'common-producer'
 include 'speedtracker'

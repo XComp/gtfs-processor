@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.INSTANT_BUILDER;
+import static com.mapohl.nyckafka.common.TestUtils.INSTANT_BUILDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

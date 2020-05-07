@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.commonproducer.services;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import com.mapohl.nyckafka.commonproducer.services.sources.EntityQueue;
 import org.springframework.kafka.core.KafkaTemplate;
 

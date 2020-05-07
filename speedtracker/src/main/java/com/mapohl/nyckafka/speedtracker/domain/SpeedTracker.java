@@ -1,7 +1,7 @@
 package com.mapohl.nyckafka.speedtracker.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

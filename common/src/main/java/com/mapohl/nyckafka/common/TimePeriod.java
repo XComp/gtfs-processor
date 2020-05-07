@@ -1,4 +1,4 @@
-package com.mapohl.nyckafka.commonproducer.utils;
+package com.mapohl.nyckafka.common;
 
 import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;

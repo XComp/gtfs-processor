@@ -1,15 +1,15 @@
 package com.mapohl.nyckafka.commonproducer.services;
 
+import com.mapohl.nyckafka.common.TestEntity;
+import com.mapohl.nyckafka.common.TimePeriod;
 import com.mapohl.nyckafka.commonproducer.services.sources.IteratorSource;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
-import com.mapohl.nyckafka.test.domain.TestEntity;
-import com.mapohl.nyckafka.test.domain.TestEntityMapper;
+import com.mapohl.nyckafka.commonproducer.testutils.TestEntityMapper;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.*;
+import static com.mapohl.nyckafka.common.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

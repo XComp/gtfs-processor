@@ -1,11 +1,11 @@
 package com.mapohl.nyckafka.commonproducer;
 
 import com.google.common.collect.Maps;
+import com.mapohl.nyckafka.common.TestEntity;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
 import com.mapohl.nyckafka.commonproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.nyckafka.commonproducer.services.sources.BasicEntityQueue;
-import com.mapohl.nyckafka.test.domain.TestEntity;
-import com.mapohl.nyckafka.test.domain.TestEntityMapper;
+import com.mapohl.nyckafka.commonproducer.testutils.TestEntityMapper;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;

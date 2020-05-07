@@ -1,13 +1,13 @@
 package com.mapohl.nyckafka.commonproducer;
 
 import com.google.common.collect.Lists;
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
+import com.mapohl.nyckafka.common.TimePeriod;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
 import com.mapohl.nyckafka.commonproducer.services.DownstreamEntityEmissionService;
 import com.mapohl.nyckafka.commonproducer.services.sources.EntityQueue;
 import com.mapohl.nyckafka.commonproducer.services.sources.EntitySource;
 import com.mapohl.nyckafka.commonproducer.services.sources.IteratorSource;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

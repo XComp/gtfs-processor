@@ -1,6 +1,7 @@
 jar.archiveBaseName = 'speedtracker'
 
 dependencies {
+    implementation project(':common')
     implementation project(':common-producer')
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

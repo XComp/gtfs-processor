@@ -2,7 +2,7 @@ package com.mapohl.nyckafka.taxiride.domain.taxiride.end;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import com.mapohl.nyckafka.taxiride.domain.NYCTaxiZone;
 import com.mapohl.nyckafka.taxiride.domain.utils.NYCTaxiRideUtils;
 import lombok.AllArgsConstructor;

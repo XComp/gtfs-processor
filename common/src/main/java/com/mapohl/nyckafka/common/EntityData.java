@@ -1,4 +1,4 @@
-package com.mapohl.nyckafka.commonproducer.domain;
+package com.mapohl.nyckafka.common;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -1,7 +1,7 @@
 package com.mapohl.nyckafka.taxiride.domain.taxiride.intermediateprice;
 
 import com.google.common.collect.Lists;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
+import com.mapohl.nyckafka.common.TimePeriod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

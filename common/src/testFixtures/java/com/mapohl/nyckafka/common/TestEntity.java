@@ -1,6 +1,5 @@
-package com.mapohl.nyckafka.test.domain;
+package com.mapohl.nyckafka.common;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

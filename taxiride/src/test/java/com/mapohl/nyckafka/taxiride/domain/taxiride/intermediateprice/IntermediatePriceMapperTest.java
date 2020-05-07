@@ -9,8 +9,8 @@ import org.springframework.kafka.support.JacksonUtils;
 
 import java.util.List;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.createInstant;
-import static com.mapohl.nyckafka.test.utils.TestUtils.createInstantStr;
+import static com.mapohl.nyckafka.common.TestUtils.createInstant;
+import static com.mapohl.nyckafka.common.TestUtils.createInstantStr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

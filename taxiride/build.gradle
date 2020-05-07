@@ -1,6 +1,7 @@
 jar.archiveBaseName = 'taxiride'
 
 dependencies {
+    implementation project(':common')
     implementation project(':common-producer')
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -12,7 +13,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation group: 'info.picocli', name: 'picocli'
 
-    testImplementation testFixtures(project(':common-producer'))
+    testImplementation testFixtures(project(':common'))
     testImplementation group: 'com.google.guava', name: 'guava'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

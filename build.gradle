@@ -22,7 +22,7 @@ allprojects {
 }
 
 subprojects {
-    if (name != "common-producer") {
+    if (name != "common-producer" && name != "common") {
         apply plugin: 'org.springframework.boot'
     }
 
@@ -49,6 +49,7 @@ subprojects {
             dependency group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
             dependency group: 'info.picocli', name: 'picocli', version: '4.2.0'
             dependency group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+            dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.3'
         }
     }
 

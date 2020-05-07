@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.taxiride.domain;
 
-import com.mapohl.nyckafka.commonproducer.domain.Entity;
+import com.mapohl.nyckafka.common.Entity;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
 import lombok.RequiredArgsConstructor;
 

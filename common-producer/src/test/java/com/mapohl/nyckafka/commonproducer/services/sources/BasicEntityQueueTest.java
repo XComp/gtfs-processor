@@ -1,17 +1,17 @@
 package com.mapohl.nyckafka.commonproducer.services.sources;
 
+import com.mapohl.nyckafka.common.TestEntity;
+import com.mapohl.nyckafka.common.TimePeriod;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
-import com.mapohl.nyckafka.commonproducer.utils.TimePeriod;
-import com.mapohl.nyckafka.test.domain.NoEntitiesMapper;
-import com.mapohl.nyckafka.test.domain.TestEntity;
-import com.mapohl.nyckafka.test.domain.TestEntityMapper;
+import com.mapohl.nyckafka.commonproducer.testutils.NoEntitiesMapper;
+import com.mapohl.nyckafka.commonproducer.testutils.TestEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.createEntity;
-import static com.mapohl.nyckafka.test.utils.TestUtils.createTimePeriod;
+import static com.mapohl.nyckafka.common.TestUtils.createEntity;
+import static com.mapohl.nyckafka.common.TestUtils.createTimePeriod;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BasicEntityQueueTest {

@@ -1,4 +1,4 @@
-package com.mapohl.nyckafka.commonproducer.domain;
+package com.mapohl.nyckafka.common;
 
 import java.time.Instant;
 

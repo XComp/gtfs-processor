@@ -1,6 +1,6 @@
 package com.mapohl.nyckafka.commonproducer;
 
-import com.mapohl.nyckafka.test.domain.TestEntity;
+import com.mapohl.nyckafka.common.TestEntity;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.mapohl.nyckafka.test.utils.TestUtils.createEntity;
+import static com.mapohl.nyckafka.common.TestUtils.createEntity;
 import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
 

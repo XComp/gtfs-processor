@@ -1,0 +1,20 @@
+plugins {
+    id 'java-test-fixtures'
+}
+
+configurations {
+    testFixturesCompileOnly.extendsFrom testFixturesAnnotationProcessor
+}
+
+jar.archiveBaseName = 'common'
+
+dependencies {
+    implementation group: 'com.google.guava', name: 'guava'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
+    testFixturesAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    testFixturesImplementation group: 'com.google.guava', name: 'guava'
+}

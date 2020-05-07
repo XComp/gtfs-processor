@@ -1,7 +1,8 @@
-package com.mapohl.nyckafka.test.domain;
+package com.mapohl.nyckafka.commonproducer.testutils;
 
+import com.mapohl.nyckafka.common.TestEntity;
+import com.mapohl.nyckafka.common.TestUtils;
 import com.mapohl.nyckafka.commonproducer.domain.EntityMapper;
-import com.mapohl.nyckafka.test.utils.TestUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
