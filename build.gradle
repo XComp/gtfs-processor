@@ -22,7 +22,7 @@ allprojects {
 }
 
 subprojects {
-    if (!name.contains("generic")) {
+    if (name != "common-producer") {
         apply plugin: 'org.springframework.boot'
     }
 

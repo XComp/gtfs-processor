@@ -40,19 +40,19 @@ Start the Kafka infrastructure:
 ./gradlew composeUp
 ```
 
-Start dummy consumer reading from the topic `<topic>`:
+Start event logging consumer reading from the topic `<topic>`:
 ```bash
-./gradlew dummy-consumer:bootRun -Pargs="--kafka.topic=<topic>"
+./gradlew common-consumer:bootRun -Pargs="--kafka.topic=<topic>"
 ```
 
 Start the speedtracker producer (filtering all entries that were created before May 5, 2017):
 ```bash
-./gradlew speedtracker-producer:bootRun --args="-c <path-to-csv> -s 2017-05-05T09:44:00"
+./gradlew speedtracker:bootRun --args="-c <path-to-csv> -s 2017-05-05T09:44:00"
 ```
 
 Start the taxiride producer (filtering all entries that were created before January 1, 2019):
 ```bash
-./gradlew taxiride-producer:bootRun --args="-c <path-to-csv> -s 2019-01-01T00:00:00"
+./gradlew taxiride:bootRun --args="-c <path-to-csv> -s 2019-01-01T00:00:00"
 ```
 
 Shutdown the Kafka infrastructure:

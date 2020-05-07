@@ -1,5 +1,0 @@
-kafka:
-  bootstrap-address: "localhost:9092"
-  group-id: "dummy-consumer"
-  auto-offset-reset: "earliest"
-  topic: "default"

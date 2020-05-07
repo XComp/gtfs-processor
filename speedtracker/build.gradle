@@ -1,0 +1,18 @@
+jar.archiveBaseName = 'speedtracker'
+
+dependencies {
+    implementation project(':common-producer')
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+    implementation group: 'com.google.guava', name: 'guava'
+    implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation group: 'info.picocli', name: 'picocli'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
