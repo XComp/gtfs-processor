@@ -1,0 +1,91 @@
+import groovy.time.TimeCategory
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+ext {
+    testCount = 0
+    testSuccessCount = 0
+    testFailureCount = 0
+    testSkippedCount = 0
+}
+
+allprojects { project ->
+    tasks.withType(Test) { testTask ->
+        ignoreFailures = true
+
+        testLogging {
+            // source: https://stackoverflow.com/questions/3963708/gradle-how-to-display-test-results-in-the-console-in-real-time
+            if (rootProject.hasProperty("verbose")) {
+                // set options for log level LIFECYCLE
+                events TestLogEvent.FAILED,
+                        TestLogEvent.PASSED,
+                        TestLogEvent.SKIPPED,
+                        TestLogEvent.STANDARD_ERROR
+                exceptionFormat TestExceptionFormat.FULL
+                showExceptions true
+                showCauses true
+                showStackTraces true
+            }
+
+            afterTest { desc, result ->
+                if (result.resultType == TestResult.ResultType.SUCCESS) {
+                    rootProject.ext.testSuccessCount += 1
+                } else if (result.resultType == TestResult.ResultType.FAILURE) {
+                    rootProject.ext.testFailureCount += 1
+                } else if (result.resultType == TestResult.ResultType.SKIPPED) {
+                    rootProject.ext.testSkippedCount += 1
+                }
+                rootProject.ext.testCount += 1
+            }
+
+            afterSuite { desc, result ->
+                if (!desc.parent) { // will match the outermost suite
+                    println ""
+                    printBox(createOutput(project.getName(), result))
+                } else if (!desc.getName().contains("Gradle Test Executor")) {
+                    println("\n >>> Results '${desc.getName()}': ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")
+                }
+            }
+        }
+    }
+}
+
+gradle.buildFinished {
+    def result = ext.testCount == ext.testSuccessCount ? "SUCCESS" : "FAILURE"
+    println ""
+    printBox(createOutput(rootProject.getName(), result, ext.testCount,
+            ext.testSuccessCount, ext.testFailureCount, ext.testSkippedCount), true)
+}
+
+private static String createOutput(name, resultType, testCnt, successCnt, failureCnt, skippedCnt, startTime = null, endTime = null) {
+    def output = "Tests '${name}': ${resultType} (${testCnt} tests, ${successCnt} passed, ${failureCnt} failed, ${skippedCnt} skipped)"
+    if (startTime != null && endTime != null) {
+        output += " in ${TimeCategory.minus(new Date(endTime), new Date(startTime))}"
+    }
+
+    return output
+}
+
+private static String createOutput(name, result) {
+    createOutput(name,
+            result.resultType,
+            result.testCount,
+            result.successfulTestCount,
+            result.failedTestCount,
+            result.skippedTestCount,
+            result.startTime,
+            result.endTime
+    )
+}
+
+private static void printBox(text, bold = false) {
+    def border1 = ['┌', '─', '┐', '│', '└', '┘']
+    def border2 = ['╔', '═', '╗', '║', '╚', '╝']
+
+    def border = bold ? border2 : border1
+    def margin = '  '
+    def innerBoxLength = 2 * margin.length() + text.length()
+    println "${border[0]}${"${border[1] * innerBoxLength}"}${border[2]}"
+    println "${border[3]}${margin}${text}${margin}${border[3]}"
+    println "${border[4]}${"${border[1] * innerBoxLength}"}${border[5]}"
+}

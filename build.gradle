@@ -12,6 +12,7 @@ plugins {
 }
 
 apply plugin: 'idea'
+apply from: file('testSummary.gradle')
 
 allprojects {
     apply plugin: 'java'
