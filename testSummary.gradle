@@ -51,10 +51,12 @@ allprojects { project ->
 }
 
 gradle.buildFinished {
-    def result = ext.testCount == ext.testSuccessCount ? "SUCCESS" : "FAILURE"
-    println ""
-    printBox(createOutput(rootProject.getName(), result, ext.testCount,
-            ext.testSuccessCount, ext.testFailureCount, ext.testSkippedCount), true)
+    if (project.tasks.withType(Test).matching { it.enabled }.collect().isEmpty()) {
+        def result = ext.testCount == ext.testSuccessCount ? "SUCCESS" : "FAILURE"
+        println ""
+        printBox(createOutput(rootProject.getName(), result, ext.testCount,
+                ext.testSuccessCount, ext.testFailureCount, ext.testSkippedCount), true)
+    }
 }
 
 private static String createOutput(name, resultType, testCnt, successCnt, failureCnt, skippedCnt, startTime = null, endTime = null) {
