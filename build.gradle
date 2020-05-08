@@ -14,14 +14,12 @@ plugins {
 apply plugin: 'idea'
 apply from: file('testSummary.gradle')
 
-allprojects {
+subprojects {
     apply plugin: 'java-library'
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-}
 
-subprojects {
     if (name != "common-producer" && name != "common") {
         apply plugin: 'org.springframework.boot'
     }
